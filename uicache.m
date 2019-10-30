@@ -127,21 +127,6 @@ int main(int argc, char *argv[]){
 			}
 		}
 
-		uint8_t cdhash[20];
-		bzero(cdhash, 20);
-		int status = csops(getppid(), CS_OPS_CDHASH, cdhash, 20);
-
-		if (status == 0){
-			isLegacyInstaller = true;
-
-			uint8_t ref_cdhash[20] = {0xc3, 0x75, 0xa8, 0xbb, 0x24, 0x22, 0x8e, 0x14, 0xa0, 0x01, 0x77, 0xa0, 0x3f, 0xaf, 0xc8, 0x7e, 0x5f, 0x50, 0xd5, 0x59};
-			for (int i = 0; i < 20; i++){
-				if (cdhash[i] != ref_cdhash[i]){
-					isLegacyInstaller = false;
-				}
-			}
-		}
-
 		if (showhelp){
 			help(argv[0]);
 			return 0;
@@ -154,10 +139,6 @@ int main(int argc, char *argv[]){
 
 			NSString *rawPath = [NSString stringWithUTF8String:path];
 			rawPath = [rawPath stringByResolvingSymlinksInPath];
-			if (![[rawPath stringByDeletingLastPathComponent] isEqualToString:@"/Applications"]){
-				fprintf(stderr, "Error: Application must be a system application!\n");
-				return -1;
-			}
 
 			NSDictionary *infoPlist = [NSDictionary dictionaryWithContentsOfFile:[rawPath stringByAppendingPathComponent:@"Info.plist"]];
 			NSString *bundleID = [infoPlist objectForKey:@"CFBundleIdentifier"];
