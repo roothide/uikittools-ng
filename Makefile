@@ -15,7 +15,7 @@ gssc: gssc.m gssc.plist
 	$(LDID) -Sgssc.plist gssc
 
 ldrestart: ldrestart.c ent.plist
-	$(CC) ldrestart.c -o ldrestart -I. -O3
+	$(CC) ldrestart.c -o ldrestart -O3 $(CFLAGS)
 	$(STRIP) ldrestart
 	$(LDID) -Sent.plist ldrestart
 
@@ -25,7 +25,7 @@ sbdidlaunch: sbdidlaunch.c ent.plist
 	$(LDID) -Sent.plist sbdidlaunch
 
 sbreload: sbreload.m sbreload-launchd.c sbreload.plist
-	$(CC) sbreload.m sbreload-launchd.c -o sbreload -framework Foundation -fobjc-arc -I. -O3
+	$(CC) sbreload.m sbreload-launchd.c -o sbreload -framework Foundation -fobjc-arc -O3 $(CFLAGS)
 	$(STRIP) sbreload
 	$(LDID) -Ssbreload.plist sbreload
 
