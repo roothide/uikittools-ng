@@ -6,8 +6,6 @@
 #import <MobileCoreServices/MobileCoreServices.h>
 
 typedef struct __CFUserNotification * CFUserNotificationRef;
-extern CFStringRef kCFUserNotificationAlertHeaderKey;
-extern CFStringRef kCFUserNotificationAlertMessageKey;
 extern CFUserNotificationRef CFUserNotificationCreate(CFAllocatorRef allocator, CFTimeInterval timeout, CFOptionFlags flags, SInt32 *error, CFDictionaryRef dictionary);
 extern SInt32 CFUserNotificationReceiveResponse(CFUserNotificationRef userNotification, CFTimeInterval timeout, CFOptionFlags *responseFlags);
 
