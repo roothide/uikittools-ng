@@ -5,10 +5,6 @@
 #import <Foundation/Foundation.h>
 #import <MobileCoreServices/MobileCoreServices.h>
 
-typedef struct __CFUserNotification * CFUserNotificationRef;
-extern CFUserNotificationRef CFUserNotificationCreate(CFAllocatorRef allocator, CFTimeInterval timeout, CFOptionFlags flags, SInt32 *error, CFDictionaryRef dictionary);
-extern SInt32 CFUserNotificationReceiveResponse(CFUserNotificationRef userNotification, CFTimeInterval timeout, CFOptionFlags *responseFlags);
-
 @interface LSApplicationWorkspace : NSObject
 + (id)defaultWorkspace;
 - (BOOL)_LSPrivateRebuildApplicationDatabasesForSystemApps:(BOOL)arg1 internal:(BOOL)arg2 user:(BOOL)arg3;
@@ -200,21 +196,6 @@ int main(int argc, char *argv[]){
 			} else if (!(getenv("SILEO") || isatty(STDOUT_FILENO) || isatty(STDIN_FILENO) || isatty(STDERR_FILENO))){
 				printf("\n");
 				fprintf(stderr, "Warning: No arguments detected. Using the old behavior for temporary compatibility. Please note that this will be removed in the future.\n");
-
-				SInt32 error;
-
-				CFMutableDictionaryRef alertDict = CFDictionaryCreateMutable( NULL, 10, &kCFCopyStringDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks);
-				CFDictionaryAddValue(alertDict, kCFUserNotificationAlertHeaderKey, CFSTR("Legacy uicache behavior triggered"));
-				CFDictionaryAddValue(alertDict, kCFUserNotificationAlertMessageKey, CFSTR("A tweak on your device has triggered legacy uicache behavior. This process is slow, most likely used incorrectly, and will not be supported in the future."));
-
-				CFOptionFlags options = 0;
-				CFUserNotificationRef userNotification = CFUserNotificationCreate(kCFAllocatorSystemDefault, 0, options, &error, alertDict);
-
-				CFOptionFlags response = 0;
-
-				CFUserNotificationReceiveResponse(userNotification, 0, &response);
-				CFRelease(userNotification);
-
 				all = true;
 			}
 		}
