@@ -121,7 +121,7 @@ int main(int argc, char *argv[]){
 			}
 		}
 
-		if (showhelp){
+		if (showhelp || argc == 1){
 			help(argv[0]);
 			return 0;
 		} else if (argc == 1 && !isLegacyInstaller){
@@ -195,8 +195,7 @@ int main(int argc, char *argv[]){
 				all = true;
 			} else if (!(getenv("SILEO") || isatty(STDOUT_FILENO) || isatty(STDIN_FILENO) || isatty(STDERR_FILENO))){
 				printf("\n");
-				fprintf(stderr, "Warning: No arguments detected. Using the old behavior for temporary compatibility. Please note that this will be removed in the future.\n");
-				all = true;
+				fprintf(stderr, "Warning uicache: No arguments detected.\n");
 			}
 		}
 		
