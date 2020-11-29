@@ -73,14 +73,76 @@ void help(char *name) {
 		"Copyright (C) 2019, Electra Team. All Rights Reserved.\n\n"
 		"Update iOS registered applications and optionally restart SpringBoard\n\n"
 
-		"  --all           Update all system and internal applications\n"
-		"                     (replicates the old uicache behavior)\n"
-		"  --path <path>   Update application bundle at the specified path\n"
-		"  --respring      Restart SpringBoard and backboardd after\n"
-		"                     updating applications.\n"
-		"  --help          Give this help list.\n\n"
+		"  --all                Update all system and internal applications\n"
+		"                          (replicates the old uicache behavior)\n"
+		"  --path <path>        Update application bundle at the specified path\n"
+		"  --unregister <path>  Unregister application bundle at the specified path\n"
+		"  --respring           Restart SpringBoard and backboardd after\n"
+		"                          updating applications.\n"
+		"  --help               Give this help list.\n\n"
 
 		"Email the Electra team via Sileo for support.\n", name);
+}
+
+void registerPath(char *path, int unregister) {
+	dlopen("/System/Library/PrivateFrameworks/MobileContainerManager.framework/MobileContainerManager", RTLD_NOW);
+
+	NSString *rawPath = [NSString stringWithUTF8String:path];
+	rawPath = [rawPath stringByResolvingSymlinksInPath];
+
+	NSDictionary *infoPlist = [NSDictionary dictionaryWithContentsOfFile:[rawPath stringByAppendingPathComponent:@"Info.plist"]];
+	NSString *bundleID = [infoPlist objectForKey:@"CFBundleIdentifier"];
+
+	NSURL *url = [NSURL fileURLWithPath:rawPath];
+
+	LSApplicationWorkspace *workspace = [LSApplicationWorkspace defaultWorkspace];
+	if (bundleID && !unregister){
+		MCMContainer *appContainer = [objc_getClass("MCMAppDataContainer") containerWithIdentifier:bundleID createIfNecessary:YES existed:nil error:nil];
+		NSString *containerPath = [appContainer url].path;
+
+		NSMutableDictionary *plist = [NSMutableDictionary dictionary];
+		[plist setObject:@"System" forKey:@"ApplicationType"];
+		[plist setObject:@1 forKey:@"BundleNameIsLocalized"];
+		[plist setObject:bundleID forKey:@"CFBundleIdentifier"];
+		[plist setObject:@0 forKey:@"CompatibilityState"];
+		if (containerPath)
+			[plist setObject:containerPath forKey:@"Container"];
+		[plist setObject:@0 forKey:@"IsDeletable"];
+		[plist setObject:rawPath forKey:@"Path"];
+
+		NSString *pluginsPath = [rawPath stringByAppendingPathComponent:@"PlugIns"];
+		NSArray *plugins = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:pluginsPath error:nil];
+
+		NSMutableDictionary *bundlePlugins = [NSMutableDictionary dictionary];
+		for (NSString *pluginName in plugins){
+			NSString *fullPath = [pluginsPath stringByAppendingPathComponent:pluginName];
+
+			NSDictionary *infoPlist = [NSDictionary dictionaryWithContentsOfFile:[fullPath stringByAppendingPathComponent:@"Info.plist"]];
+			NSString *pluginBundleID = [infoPlist objectForKey:@"CFBundleIdentifier"];
+			if (!pluginBundleID)
+				continue;
+			MCMContainer *pluginContainer = [objc_getClass("MCMPluginKitPluginDataContainer") containerWithIdentifier:pluginBundleID createIfNecessary:YES existed:nil error:nil];
+			NSString *pluginContainerPath = [pluginContainer url].path;
+
+			NSMutableDictionary *pluginPlist = [NSMutableDictionary dictionary];
+			[pluginPlist setObject:@"PluginKitPlugin" forKey:@"ApplicationType"];
+			[pluginPlist setObject:@1 forKey:@"BundleNameIsLocalized"];
+			[pluginPlist setObject:pluginBundleID forKey:@"CFBundleIdentifier"];
+			[pluginPlist setObject:@0 forKey:@"CompatibilityState"];
+			[pluginPlist setObject:pluginContainerPath forKey:@"Container"];
+			[pluginPlist setObject:fullPath forKey:@"Path"];
+			[pluginPlist setObject:bundleID forKey:@"PluginOwnerBundleID"];
+			[bundlePlugins setObject:pluginPlist forKey:pluginBundleID];
+		}
+		[plist setObject:bundlePlugins forKey:@"_LSBundlePlugins"];
+		if (![workspace registerApplicationDictionary:plist]){
+			fprintf(stderr, "Error: Unable to register %s\n", path);
+		}
+	} else {
+		if (![workspace unregisterApplication:url]){
+			fprintf(stderr, "Error: Unable to unregister %s\n", path);
+		}
+	}
 }
 
 int main(int argc, char *argv[]){
@@ -88,29 +150,35 @@ int main(int argc, char *argv[]){
 		platformizeme();
 
 		int all = 0;
-		char *path = NULL;
 		int respring = 0;
+		NSMutableSet *registerSet = [[NSMutableSet alloc] init];
+		NSMutableSet *unregisterSet = [[NSMutableSet alloc] init];
+		char *path;
 		int showhelp = 0;
 		bool isLegacyInstaller = false;
 
 		struct option longOptions[] = {
 			{ "all" , no_argument, 0, 'a'},
 			{ "path", required_argument, 0, 'p'},
+			{ "unregister", required_argument, 0, 'u'},
 			{ "respring", no_argument, 0, 'r' },
-			{ "help", no_argument, 0, '?' },
+			{ "help", no_argument, 0, 'h' },
 			{ NULL, 0, NULL, 0 }
 		};
 
 		int index = 0, code = 0;
 
-		while ((code = getopt_long(argc, argv, "ap:rh?", longOptions, &index)) != -1) {
+		while ((code = getopt_long(argc, argv, "ap:u:rh", longOptions, &index)) != -1) {
 			switch (code) {
 				printf("Code: %c\n", code);
 				case 'a':
 					all = 1;
 					break;
 				case 'p':
-					path = strdup(optarg);
+					[registerSet addObject:[NSString stringWithUTF8String:strdup(optarg)]];
+					break;
+				case 'u':
+					[unregisterSet addObject:[NSString stringWithUTF8String:strdup(optarg)]];
 					break;
 				case 'r':
 					respring = 1;
@@ -128,66 +196,12 @@ int main(int argc, char *argv[]){
 			help(argv[0]);
 		}
 
-		if (path){
-			dlopen("/System/Library/PrivateFrameworks/MobileContainerManager.framework/MobileContainerManager", RTLD_NOW);
+		for(NSString *path in registerSet) {
+			registerPath((char *)[path UTF8String], 0);
+		}
 
-			NSString *rawPath = [NSString stringWithUTF8String:path];
-			rawPath = [rawPath stringByResolvingSymlinksInPath];
-
-			NSDictionary *infoPlist = [NSDictionary dictionaryWithContentsOfFile:[rawPath stringByAppendingPathComponent:@"Info.plist"]];
-			NSString *bundleID = [infoPlist objectForKey:@"CFBundleIdentifier"];
-			
-			NSURL *url = [NSURL fileURLWithPath:rawPath];
-
-			LSApplicationWorkspace *workspace = [LSApplicationWorkspace defaultWorkspace];
-			if (bundleID){
-				MCMContainer *appContainer = [objc_getClass("MCMAppDataContainer") containerWithIdentifier:bundleID createIfNecessary:YES existed:nil error:nil];
-				NSString *containerPath = [appContainer url].path;
-
-				NSMutableDictionary *plist = [NSMutableDictionary dictionary];
-				[plist setObject:@"System" forKey:@"ApplicationType"];
-				[plist setObject:@1 forKey:@"BundleNameIsLocalized"];
-				[plist setObject:bundleID forKey:@"CFBundleIdentifier"];
-				[plist setObject:@0 forKey:@"CompatibilityState"];
-				if (containerPath)
-					[plist setObject:containerPath forKey:@"Container"];
-				[plist setObject:@0 forKey:@"IsDeletable"];
-				[plist setObject:rawPath forKey:@"Path"];
-
-				NSString *pluginsPath = [rawPath stringByAppendingPathComponent:@"PlugIns"];
-				NSArray *plugins = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:pluginsPath error:nil];
-
-				NSMutableDictionary *bundlePlugins = [NSMutableDictionary dictionary];
-				for (NSString *pluginName in plugins){
-					NSString *fullPath = [pluginsPath stringByAppendingPathComponent:pluginName];
-
-					NSDictionary *infoPlist = [NSDictionary dictionaryWithContentsOfFile:[fullPath stringByAppendingPathComponent:@"Info.plist"]];
-					NSString *pluginBundleID = [infoPlist objectForKey:@"CFBundleIdentifier"];
-					if (!pluginBundleID)
-						continue;
-					MCMContainer *pluginContainer = [objc_getClass("MCMPluginKitPluginDataContainer") containerWithIdentifier:pluginBundleID createIfNecessary:YES existed:nil error:nil];
-					NSString *pluginContainerPath = [pluginContainer url].path;
-
-					NSMutableDictionary *pluginPlist = [NSMutableDictionary dictionary];
-					[pluginPlist setObject:@"PluginKitPlugin" forKey:@"ApplicationType"];
-					[pluginPlist setObject:@1 forKey:@"BundleNameIsLocalized"];
-					[pluginPlist setObject:pluginBundleID forKey:@"CFBundleIdentifier"];
-					[pluginPlist setObject:@0 forKey:@"CompatibilityState"];
-					[pluginPlist setObject:pluginContainerPath forKey:@"Container"];
-					[pluginPlist setObject:fullPath forKey:@"Path"];
-					[pluginPlist setObject:bundleID forKey:@"PluginOwnerBundleID"];
-					[bundlePlugins setObject:pluginPlist forKey:pluginBundleID];
-				}
-				[plist setObject:bundlePlugins forKey:@"_LSBundlePlugins"];
-				if (![workspace registerApplicationDictionary:plist]){
-					fprintf(stderr, "Error: Unable to register app!\n");
-				}
-			} else {
-				if (![workspace unregisterApplication:url]){
-					fprintf(stderr, "Error: Unable to unregister app!\n");
-				}
-			}
-			free(path);
+		for(NSString *path in unregisterSet) {
+			registerPath((char *)[path UTF8String], 1);
 		}
 
 		if (argc == 1){

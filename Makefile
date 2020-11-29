@@ -45,4 +45,4 @@ uiopen: uiopen.m ent.plist
 	$(LDID) -Suiopen.plist uiopen
 
 clean:
-	rm cfversion sbdidlaunch sbreload uicache uiduid uiopen
+	rm -f cfversion	gssc ldrestart sbdidlaunch sbreload uicache uiduid uiopen
