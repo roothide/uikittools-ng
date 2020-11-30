@@ -9,6 +9,11 @@ cfversion: cfversion.c ent.plist
 	$(STRIP) cfversion
 	$(LDID) -Sent.plist cfversion
 
+ecidecid: ecidecid.m ent.plist
+	$(CC) ecidecid.m -o ecidecid -framework CoreFoundation -lMobileGestalt -fobjc-arc -O3 $(CFLAGS)
+	$(STRIP) ecidecid
+	$(LDID) -Sent.plist ecidecid
+
 gssc: gssc.m gssc.plist
 	$(CC) gssc.m -o gssc -framework Foundation -lMobileGestalt -O3 $(CFLAGS)
 	$(STRIP) gssc
