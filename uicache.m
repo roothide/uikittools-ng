@@ -91,7 +91,6 @@ int main(int argc, char *argv[]){
 		char *path = NULL;
 		int respring = 0;
 		int showhelp = 0;
-		bool isLegacyInstaller = false;
 
 		struct option longOptions[] = {
 			{ "all" , no_argument, 0, 'a'},
@@ -124,8 +123,6 @@ int main(int argc, char *argv[]){
 		if (showhelp || argc == 1){
 			help(argv[0]);
 			return 0;
-		} else if (argc == 1 && !isLegacyInstaller){
-			help(argv[0]);
 		}
 
 		if (path){
@@ -191,9 +188,7 @@ int main(int argc, char *argv[]){
 		}
 
 		if (argc == 1){
-			if (isLegacyInstaller){
-				all = true;
-			} else if (!(getenv("SILEO") || isatty(STDOUT_FILENO) || isatty(STDIN_FILENO) || isatty(STDERR_FILENO))){
+			if (!(getenv("SILEO") || isatty(STDOUT_FILENO) || isatty(STDIN_FILENO) || isatty(STDERR_FILENO))){
 				printf("\n");
 				fprintf(stderr, "Warning uicache: No arguments detected.\n");
 			}
