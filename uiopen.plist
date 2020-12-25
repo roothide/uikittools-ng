@@ -7,5 +7,7 @@
 	<true/>
 	<key>com.apple.springboard.opensensitiveurl</key>
 	<true/>
+	<key>com.apple.springboard.launchapplications</key>
+	<true/>
 </dict>
 </plist>
