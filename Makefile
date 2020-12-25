@@ -2,15 +2,20 @@ CC = xcrun -sdk iphoneos clang -arch arm64 -miphoneos-version-min=11.0
 STRIP = strip
 LDID = ldid
 
-all: cfversion gssc ldrestart sbdidlaunch sbreload uicache uiduid uiopen
+all: cfversion ecidecid gssc ldrestart sbdidlaunch sbreload uicache uiduid uiopen
 
 cfversion: cfversion.c ent.plist
 	$(CC) cfversion.c -o cfversion -framework CoreFoundation -O3 $(CFLAGS)
 	$(STRIP) cfversion
 	$(LDID) -Sent.plist cfversion
 
+ecidecid: ecidecid.m ent.plist
+	$(CC) ecidecid.m -o ecidecid -framework CoreFoundation -lMobileGestalt -fobjc-arc -O3 $(CFLAGS)
+	$(STRIP) ecidecid
+	$(LDID) -Sent.plist ecidecid
+
 gssc: gssc.m gssc.plist
-	$(CC) gssc.m -o gssc -framework Foundation -lMobileGestalt -O3 $(CFLAGS)
+	$(CC) gssc.m -o gssc -framework Foundation -lMobileGestalt -fobjc-arc -O3 $(CFLAGS)
 	$(STRIP) gssc
 	$(LDID) -Sgssc.plist gssc
 
@@ -40,9 +45,9 @@ uiduid: uiduid.m ent.plist
 	$(LDID) -Sent.plist uiduid
 
 uiopen: uiopen.m ent.plist
-	$(CC) uiopen.m -o uiopen -framework Foundation -framework MobileCoreServices -O3 $(CFLAGS)
+	$(CC) uiopen.m -o uiopen -framework Foundation -framework MobileCoreServices -fobjc-arc -O3 $(CFLAGS)
 	$(STRIP) uiopen
 	$(LDID) -Suiopen.plist uiopen
 
 clean:
-	rm -f cfversion	gssc ldrestart sbdidlaunch sbreload uicache uiduid uiopen
+	rm -f cfversion ecidecid gssc ldrestart sbdidlaunch sbreload uicache uiduid uiopen

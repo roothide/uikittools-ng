@@ -16,7 +16,7 @@ int main(int argc, char *argv[]) {
     NSURL *url = [NSURL URLWithString:[NSString stringWithUTF8String:argv[1]]];
 
     void *fbs = dlopen("/System/Library/PrivateFrameworks/FrontBoardServices.framework/FrontBoardServices", RTLD_NOW);
-    NSString **FBSOpenApplicationOptionKeyUnlockDevice = dlsym(fbs, "FBSOpenApplicationOptionKeyUnlockDevice");
+    NSString * __strong *FBSOpenApplicationOptionKeyUnlockDevice = (NSString *__strong *)dlsym(fbs, "FBSOpenApplicationOptionKeyUnlockDevice");
     [[LSApplicationWorkspace defaultWorkspace] openSensitiveURL:url withOptions:@{*FBSOpenApplicationOptionKeyUnlockDevice:@YES}];
     return 0;
 }
