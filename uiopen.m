@@ -75,6 +75,5 @@ int main(int argc, char *argv[]) {
     else if (bundleId) {
         [[LSApplicationWorkspace defaultWorkspace] openApplicationWithBundleID:[NSString stringWithUTF8String:bundleId]];
     }
-
     return 0;
 }
