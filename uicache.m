@@ -4,6 +4,26 @@
 #import <objc/runtime.h>
 #import <Foundation/Foundation.h>
 #import <MobileCoreServices/MobileCoreServices.h>
+#import <Foundation/NSURL.h>
+
+@interface _LSApplicationState : NSObject
+-(BOOL)isValid;
+@end
+
+@interface LSApplicationProxy : NSObject
++(id)applicationProxyForIdentifier:(id)arg1;
+-(id)localizedNameForContext:(id)arg1;
+-(_LSApplicationState *)appState;
+-(NSURL *)bundleURL;
+-(NSURL *)containerURL;
+-(NSString *)bundleExecutable;
+-(NSString *)bundleIdentifier;
+-(NSString *)vendorName;
+-(NSString *)teamID;
+-(NSString *)applicationType;
+-(NSSet *)claimedURLSchemes;
+-(BOOL)isDeletable;
+@end
 
 @interface LSApplicationWorkspace : NSObject
 + (id)defaultWorkspace;
@@ -15,6 +35,7 @@
 - (BOOL)unregisterApplication:(NSURL *)url;
 - (NSArray *)installedPlugins;
 -(void)_LSPrivateSyncWithMobileInstallation;
+-(NSArray <LSApplicationProxy*> *)allApplications;
 @end
 
 typedef NS_OPTIONS(NSUInteger, SBSRelaunchActionOptions) {
@@ -79,6 +100,8 @@ void help(char *name) {
 		"  --unregister <path>  Unregister application bundle at the specified path\n"
 		"  --respring           Restart SpringBoard and backboardd after\n"
 		"                          updating applications.\n"
+		"  --list               List the bundle ids of installed apps\n"
+		"  --info <bundleid>    Give information about given bundle id\n"
 		"  --help               Give this help list.\n\n"
 
 		"Email the Electra team via Sileo for support.\n", name);
@@ -145,6 +168,45 @@ void registerPath(char *path, int unregister) {
 	}
 }
 
+void listBundleID() {
+	LSApplicationWorkspace *workspace = [LSApplicationWorkspace defaultWorkspace];
+	for (LSApplicationProxy *app in [workspace allApplications]) {
+		printf("%s\n", [[app bundleIdentifier] UTF8String]);
+	}
+}
+
+void infoForBundleID(NSString *bundleID) {
+	LSApplicationWorkspace *workspace = [LSApplicationWorkspace defaultWorkspace];
+	LSApplicationProxy *app = [LSApplicationProxy applicationProxyForIdentifier:bundleID];
+	if ([[app appState] isValid]) {
+		printf(
+				"Name: %s\n"
+				"BundleID: %s\n"
+				"ExecutableName: %s\n"
+				"Path: %s\n"
+			 	"Container: %s\n"
+				"VendorName: %s\n"
+				"TeamID: %s\n"
+				"Type: %s\n"
+				"Removeable: %s\n",
+				[[app localizedNameForContext:nil] UTF8String],
+				[[app bundleIdentifier] UTF8String],
+				[[app bundleExecutable] UTF8String],
+				[[app bundleURL] fileSystemRepresentation],
+				[[app containerURL] fileSystemRepresentation],
+				[[app vendorName] UTF8String],
+				[[app teamID] UTF8String],
+				[[app applicationType] UTF8String],
+				[app isDeletable]? "true" : "false"
+		);
+		for (NSString *scheme in [app claimedURLSchemes]) {
+			printf("URLScheme: %s\n", [scheme UTF8String]);
+		}
+	} else {
+		printf("%s is an invalid bundle id\n", [[app bundleIdentifier] UTF8String]);
+	}
+}
+
 int main(int argc, char *argv[]){
 	@autoreleasepool {
 		platformizeme();
@@ -154,6 +216,8 @@ int main(int argc, char *argv[]){
 		NSMutableSet *registerSet = [[NSMutableSet alloc] init];
 		NSMutableSet *unregisterSet = [[NSMutableSet alloc] init];
 		char *path;
+		int list = 0;
+		NSMutableSet *infoSet = [[NSMutableSet alloc] init];
 		int showhelp = 0;
 
 		struct option longOptions[] = {
@@ -161,13 +225,15 @@ int main(int argc, char *argv[]){
 			{ "path", required_argument, 0, 'p'},
 			{ "unregister", required_argument, 0, 'u'},
 			{ "respring", no_argument, 0, 'r' },
+			{ "list", no_argument, 0, 'l' },
+			{ "info", required_argument, 0, 'i' },
 			{ "help", no_argument, 0, 'h' },
 			{ NULL, 0, NULL, 0 }
 		};
 
 		int index = 0, code = 0;
 
-		while ((code = getopt_long(argc, argv, "ap:u:rh", longOptions, &index)) != -1) {
+		while ((code = getopt_long(argc, argv, "ap:u:rli:h", longOptions, &index)) != -1) {
 			switch (code) {
 				printf("Code: %c\n", code);
 				case 'a':
@@ -185,12 +251,25 @@ int main(int argc, char *argv[]){
 				case 'h':
 					showhelp = 1;
 					break;
+				case 'l':
+					list = 1;
+					break;
+				case 'i':
+					[infoSet addObject:[NSString stringWithUTF8String:strdup(optarg)]];
+					break;
 			}
 		}
 
 		if (showhelp || argc == 1){
 			help(argv[0]);
 			return 0;
+		}
+
+		if (list)
+			listBundleID();
+
+		for (NSString *bundleID in infoSet) {
+			infoForBundleID(bundleID);
 		}
 
 		for(NSString *path in registerSet) {
