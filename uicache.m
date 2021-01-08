@@ -199,8 +199,17 @@ void infoForBundleID(NSString *bundleID) {
 				[[app applicationType] UTF8String],
 				[app isDeletable]? "true" : "false"
 		);
-		for (NSString *scheme in [app claimedURLSchemes]) {
-			printf("URLScheme: %s\n", [scheme UTF8String]);
+		if ([app respondsToSelector:@selector(claimedURLSchemes)]) {
+			for (NSString *scheme in [app claimedURLSchemes]) {
+				printf("URLScheme: %s\n", [scheme UTF8String]);
+			}
+		} else {
+			NSArray<NSDictionary *> *appURLS = [[NSBundle bundleWithURL:[app bundleURL]] objectForInfoDictionaryKey:@"CFBundleURLTypes"];
+			for (NSDictionary *urlInfo in appURLS) {
+				for (NSString *urlScheme in urlInfo[@"CFBundleURLSchemes"]) {
+					printf("URLScheme: %s\n", [urlScheme UTF8String]);
+				}
+			}
 		}
 	} else {
 		printf("%s is an invalid bundle id\n", [[app bundleIdentifier] UTF8String]);
