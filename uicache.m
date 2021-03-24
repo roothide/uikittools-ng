@@ -110,6 +110,11 @@ void help(char *name) {
 void registerPath(char *path, int unregister) {
 	dlopen("/System/Library/PrivateFrameworks/MobileContainerManager.framework/MobileContainerManager", RTLD_NOW);
 
+	LSApplicationWorkspace *workspace = [LSApplicationWorkspace defaultWorkspace];
+	if (unregister && ![[NSString stringWithUTF8String:path] hasPrefix:@"/"]) {
+		LSApplicationProxy *app = [LSApplicationProxy applicationProxyForIdentifier:[NSString stringWithUTF8String:path]];
+		path = (char *)[[app bundleURL] fileSystemRepresentation];
+	}
 	NSString *rawPath = [NSString stringWithUTF8String:path];
 	rawPath = [rawPath stringByResolvingSymlinksInPath];
 
@@ -118,7 +123,6 @@ void registerPath(char *path, int unregister) {
 
 	NSURL *url = [NSURL fileURLWithPath:rawPath];
 
-	LSApplicationWorkspace *workspace = [LSApplicationWorkspace defaultWorkspace];
 	if (bundleID && !unregister){
 		MCMContainer *appContainer = [objc_getClass("MCMAppDataContainer") containerWithIdentifier:bundleID createIfNecessary:YES existed:nil error:nil];
 		NSString *containerPath = [appContainer url].path;
@@ -171,7 +175,7 @@ void registerPath(char *path, int unregister) {
 void listBundleID() {
 	LSApplicationWorkspace *workspace = [LSApplicationWorkspace defaultWorkspace];
 	for (LSApplicationProxy *app in [workspace allApplications]) {
-		printf("%s\n", [[app bundleIdentifier] UTF8String]);
+		printf("%s : %s\n", [[app bundleIdentifier] UTF8String], [[app bundleURL] fileSystemRepresentation]);
 	}
 }
 
@@ -184,7 +188,7 @@ void infoForBundleID(NSString *bundleID) {
 				"BundleID: %s\n"
 				"ExecutableName: %s\n"
 				"Path: %s\n"
-			 	"Container: %s\n"
+			 	"Container Path: %s\n"
 				"VendorName: %s\n"
 				"TeamID: %s\n"
 				"Type: %s\n"
@@ -234,15 +238,17 @@ int main(int argc, char *argv[]){
 			{ "path", required_argument, 0, 'p'},
 			{ "unregister", required_argument, 0, 'u'},
 			{ "respring", no_argument, 0, 'r' },
-			{ "list", no_argument, 0, 'l' },
+			{ "list", optional_argument, 0, 'l' },
 			{ "info", required_argument, 0, 'i' },
 			{ "help", no_argument, 0, 'h' },
+			{ "verbose", no_argument, 0, 'v' }, // verbose and force are added to maintain compatibility to old uikittools
+			{ "force", no_argument, 0, 'f' },
 			{ NULL, 0, NULL, 0 }
 		};
 
 		int index = 0, code = 0;
 
-		while ((code = getopt_long(argc, argv, "ap:u:rli:h", longOptions, &index)) != -1) {
+		while ((code = getopt_long(argc, argv, "ap:u:rl::i:hfv", longOptions, &index)) != -1) {
 			switch (code) {
 				printf("Code: %c\n", code);
 				case 'a':
@@ -261,7 +267,12 @@ int main(int argc, char *argv[]){
 					showhelp = 1;
 					break;
 				case 'l':
-					list = 1;
+					if (optarg)
+						[infoSet addObject:[NSString stringWithUTF8String:strdup(optarg)]];
+					else if (NULL != argv[optind] && '-' != argv[optind][0] )
+						[infoSet addObject:[NSString stringWithUTF8String:strdup(argv[optind++])]];
+					else
+						list = 1;
 					break;
 				case 'i':
 					[infoSet addObject:[NSString stringWithUTF8String:strdup(optarg)]];
