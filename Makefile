@@ -1,6 +1,6 @@
-CC = xcrun -sdk iphoneos clang -arch arm64 -miphoneos-version-min=11.0
-STRIP = strip
-LDID = ldid
+CC ?= xcrun -sdk iphoneos clang -arch arm64 -miphoneos-version-min=11.0
+STRIP ?= strip
+LDID ?= ldid
 
 all: cfversion ecidecid gssc ldrestart sbdidlaunch sbreload uicache uiduid uiopen
 
