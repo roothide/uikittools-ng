@@ -5,6 +5,7 @@
 
 @interface LSBundleProxy : NSObject
 @property (nonatomic, assign, readonly) NSURL *bundleURL;
+@property (nonatomic, assign, readonly) NSString *canonicalExecutablePath;
 @end
 
 @interface LSApplicationProxy : LSBundleProxy
@@ -121,7 +122,8 @@ int main(int argc, char *argv[]) {
         LSApplicationWorkspace *workspace = [LSApplicationWorkspace defaultWorkspace];
         NSArray<LSApplicationProxy *> *apps = [workspace allInstalledApplications];
 
-        NSString *urlString = [@"file://" stringByAppendingString:[NSString stringWithUTF8String:path]];
+		NSString *pathString = [NSString stringWithUTF8String:path];
+        NSString *urlString = [@"file://" stringByAppendingString:pathString];
 
         if (![urlString hasSuffix:@"/"]) {
             urlString = [urlString stringByAppendingString:@"/"];
@@ -131,7 +133,7 @@ int main(int argc, char *argv[]) {
         if (bundleURL) {
             BOOL found = NO;
             for (LSApplicationProxy *app in apps) {
-                if ([bundleURL isEqual:app.bundleURL]) {
+                if ([bundleURL isEqual:app.bundleURL] || [pathString isEqualToString:app.canonicalExecutablePath]) {
                     [workspace openApplicationWithBundleID:app.applicationIdentifier];
                     found = YES;
                     break;
