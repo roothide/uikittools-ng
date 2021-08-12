@@ -30,7 +30,7 @@ void help(char *name) {
 		"  --url <URL>     Open the specified URL\n"
 		"  --bundleid <id> Open application with the\n"
 		"                     specified bundle id.\n"
-		"  --name <id>     Open application with the\n"
+		"  --app <app>     Open application with the\n"
 		"                     specified name.\n"
 		"  --path <path>   Open application at the specified path\n"
 		"  --help          Give this help list.\n", name);
@@ -39,14 +39,14 @@ void help(char *name) {
 int main(int argc, char *argv[]) {
     char *url = NULL;
     char *bundleId = NULL;
-    char *name = NULL;
+    char *app = NULL;
     char *path = NULL;
     int showhelp = 0;
 
     struct option longOptions[] = {
         { "url" , required_argument, 0, 'u'},
         { "bundleid", required_argument, 0, 'b'},
-        { "name", required_argument, 0, 'n'},
+        { "app", required_argument, 0, 'a'},
         { "path", required_argument, 0, 'p'},
         { "help", no_argument, 0, 'h' },
         { NULL, 0, NULL, 0 }
@@ -56,7 +56,7 @@ int main(int argc, char *argv[]) {
 
     int opterr = 0; // silence getopt errors, allow us to replicate old behaviour
 
-    while ((code = getopt_long(argc, argv, "u:b:n:p:h", longOptions, &index)) != -1) {
+    while ((code = getopt_long(argc, argv, "u:b:a:p:h", longOptions, &index)) != -1) {
         switch (code) {
             case 'u':
                 url = strdup(optarg);
@@ -64,8 +64,8 @@ int main(int argc, char *argv[]) {
             case 'b':
                 bundleId = strdup(optarg);
                 break;
-            case 'n':
-                name = strdup(optarg);
+            case 'a':
+                app = strdup(optarg);
                 break;
             case 'p':
                 path = strdup(optarg);
@@ -82,7 +82,7 @@ int main(int argc, char *argv[]) {
     }
 
     // replicate old behaviour
-    if (!url && !bundleId && !name && !path && !showhelp) {
+    if (!url && !bundleId && !app && !path && !showhelp) {
         url = strdup(argv[1]);
     }
 
@@ -99,22 +99,22 @@ int main(int argc, char *argv[]) {
     else if (bundleId) {
         [[LSApplicationWorkspace defaultWorkspace] openApplicationWithBundleID:[NSString stringWithUTF8String:bundleId]];
     }
-    else if (name) {
+    else if (app) {
         LSApplicationWorkspace *workspace = [LSApplicationWorkspace defaultWorkspace];
         NSArray<LSApplicationProxy *> *apps = [workspace allInstalledApplications];
 
-        NSString *nameStr = [NSString stringWithUTF8String:name];
+        NSString *nameStr = [NSString stringWithUTF8String:app];
 
         BOOL found = NO;
-        for (LSApplicationProxy *app in apps) {
-            if ([nameStr isEqualToString:[app localizedNameForContext:nil]]) {
-                [workspace openApplicationWithBundleID:app.applicationIdentifier];
+        for (LSApplicationProxy *appProxy in apps) {
+            if ([nameStr isEqualToString:[appProxy localizedNameForContext:nil]]) {
+                [workspace openApplicationWithBundleID:appProxy.applicationIdentifier];
                 found = YES;
                 break;
             }
         }
         if (!found) {
-            fprintf(stderr, "No application called: %s\n", name);
+            fprintf(stderr, "No application called: %s\n", app);
             return 1;
         }
     }
