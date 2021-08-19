@@ -27,12 +27,12 @@
 .Dt UIOPEN 1
 .Os
 .Sh NAME
-.Nm uiopen 
+.Nm uiopen
 .Nd open an application or url
 .Sh SYNOPSIS
 .Nm
 .Op Fl h
-.Op Fl a Ar name 
+.Op Fl a Ar name
 .Op Fl b Ar id
 .Op Fl p Ar path
 .Op Fl u Ar url
@@ -54,7 +54,7 @@ Opens the application at the specified .app bundle.
 .It Fl u , -url Ar url
 Opens the specified url in a browser for http or follows the url scheme.
 .El
-.Sh EXAMPLE
+.Sh EXAMPLES
 To open github.com in the default browser use:
 .Dl "uiopen -u https://github.com"
 .Pp
@@ -67,7 +67,7 @@ To open the application at /Applications/Sileo.app use:
 .Xr uicache 1
 .Sh HISTORY
 The
-.Xr uiopen 1
+.Nm
 utility first appeared in uikittools on August 18, 2008, written by
 .An Jay Freeman .
 Then was reimplemented by
@@ -78,10 +78,12 @@ The
 .Fl h ,
 and
 .Fl b
-were added to uiopen by absidue on December 25, 2020. The
+were added to uiopen by absidue on December 25, 2020.
+The
 .Fl a ,
 and
 .Fl p
-flags were added by absidue on August 12, 2021. The
+flags were added by absidue on August 12, 2021.
+The
 .Nm Ar url
 format was deprecated on August 19, 2021.
