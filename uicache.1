@@ -1,0 +1,90 @@
+.\"-
+.\" Copyright (c) 2021
+.\"	Cameron Katri.  All rights reserved.
+.\"
+.\" Redistribution and use in source and binary forms, with or without
+.\" modification, are permitted provided that the following conditions
+.\" are met:
+.\" 1. Redistributions of source code must retain the above copyright
+.\"    notice, this list of conditions and the following disclaimer.
+.\" 2. Redistributions in binary form must reproduce the above copyright
+.\"    notice, this list of conditions and the following disclaimer in the
+.\"    documentation and/or other materials provided with the distribution.
+.\"
+.\" THIS SOFTWARE IS PROVIDED BY CAMERON KATRI AND CONTRIBUTORS ``AS IS'' AND
+.\" ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+.\" IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+.\" ARE DISCLAIMED.  IN NO EVENT SHALL CAMERON KATRI OR CONTRIBUTORS BE LIABLE
+.\" FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+.\" DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+.\" OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+.\" HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+.\" LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+.\" OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+.\" SUCH DAMAGE.
+.\"
+.Dd August 19, 2021
+.Dt UICACHE 1
+.Os
+.Sh NAME
+.Nm uicache
+.Nd update registered applications
+.Sh SYNOPSIS
+.Nm
+.Op Fl ahlr
+.Op Fl i Ar id
+.Op Fl p Ar path
+.Op Fl u Ar path
+.Sh DESCRIPTION
+The
+.Nm
+updates the applications that show on the homescreen and optionally will respring afterwards.
+.Pp
+The options are as follows:
+.Bl -tag -width indent
+.It Fl a , -all
+Rebuild the entire cache. This replicates the old
+.Nm
+behavior and is very slow
+.It Fl h , -help
+Prints a help text
+.It Fl r , -respring
+Restarts SpringBoard and backboard after all other actions
+.It Fl l , -list
+Lists the bundle id and path for each registered application
+.It Fl i , -info Ar bundle id
+Shows information about the application with the specified bundle id
+.It Fl u , -unregister Ar path
+Removes the application at
+.Ar path
+from the cache
+.It Fl p , -path Ar path
+Adds the application at
+.Ar path
+to the cache
+.El
+.Sh EXAMPLE
+To refresh all applications use:
+.Dl "uicache -a"
+.Pp
+To register Sileo use:
+.Dl "uicache -p /Applications/Sileo.app"
+.Pp
+To show information about the Settings app use:
+.Dl "uicache -i com.apple.preferences"
+.Sh SEE ALSO
+.Xr sbreload 1 ,
+.Xr uiopen 1
+.Sh HISTORY
+The
+.Xr uicache 1
+utility first appeared in uikittools on September 14, 2008, written by
+.An Jay Freeman .
+Then was reimplemented by
+.An CoolStar
+for the Chimera jailbreak on April 30, 2019. The
+.Fl l
+and
+.Fl i
+flags were added to uikittools-ng on April 4, 2021, by
+.An Cameron Katri .
