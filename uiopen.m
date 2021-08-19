@@ -25,8 +25,6 @@ void help(char *name) {
 		"Usage: %s [OPTION...]\n"
 		"Open URLs and open iOS applications by bundle ID\n\n"
 
-		"  <URL>           Open the specified URL\n"
-		"                     (replicates the old uiopen behavior)\n"
 		"  --url <URL>     Open the specified URL\n"
 		"  --bundleid <id> Open application with the\n"
 		"                     specified bundle id.\n"
