@@ -28,7 +28,7 @@
 .Os
 .Sh NAME
 .Nm uiopen
-.Nd open an application or url
+.Nd open an application or URL
 .Sh SYNOPSIS
 .Nm
 .Op Fl h
@@ -37,11 +37,9 @@
 .Op Fl p Ar path
 .Op Fl u Ar url
 .Sh DESCRIPTION
-The
 .Nm
-will open the specified app or url on SpringBoard.
-.Pp
-The options are as follows:
+will open a specified app or URL, displaying it on SpringBoard.
+.Sh OPTIONS
 .Bl -tag -width indent
 .It Fl a , -app Ar name
 Finds the app with name and opens it.
@@ -55,13 +53,13 @@ Opens the application at the specified .app bundle.
 Opens the specified url in a browser for http or follows the url scheme.
 .El
 .Sh EXAMPLES
-To open github.com in the default browser use:
+To open github.com in the default browser
 .Dl "uiopen -u https://github.com"
 .Pp
-To open the Settings app by name use:
+To open the Settings app
 .Dl "uiopen -a Settings"
 .Pp
-To open the application at /Applications/Sileo.app use:
+To open Sileo using it's path, /Applications/Sileo.app 
 .Dl "uiopen -p /Application/Sileo.app"
 .Sh SEE ALSO
 .Xr uicache 1
@@ -70,7 +68,7 @@ The
 .Nm
 utility first appeared in uikittools on August 18, 2008, written by
 .An Jay Freeman .
-Then was reimplemented by
+Later, it was reimplemented by
 .An CoolStar
 for the Chimera jailbreak on April 30, 2019.
 The
