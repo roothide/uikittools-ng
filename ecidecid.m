@@ -1,4 +1,4 @@
-#include <CoreFoundation/CoreFoundation.h>
+#import <CoreFoundation/CoreFoundation.h>
 
 CFNumberRef MGCopyAnswer(CFStringRef string);
 

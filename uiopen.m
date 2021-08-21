@@ -1,7 +1,7 @@
-#include <stdio.h>
+#import <stdio.h>
 #import <getopt.h>
-#include <dlfcn.h>
-#include <Foundation/Foundation.h>
+#import <dlfcn.h>
+#import <Foundation/Foundation.h>
 
 @interface LSBundleProxy : NSObject
 @property (nonatomic, assign, readonly) NSURL *bundleURL;
