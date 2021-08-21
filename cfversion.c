@@ -2,5 +2,5 @@
 
 int main(){
 	printf("%.2f\n", kCFCoreFoundationVersionNumber);
-    return 0;
+	return 0;
 }
