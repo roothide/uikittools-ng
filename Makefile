@@ -48,7 +48,7 @@ localelocale: localelocale.m ent.plist
 	$(CC) -fobjc-arc -O3 $(CFLAGS) localelocale.m -o localelocale $(LDFLAGS) -framework Foundation
 
 serialserial: serialserial.m ent.plist
-	$(CC) -fobjc-arc -O3 $(CFLAGS) serialserial.m -o serialserial $(LDFLAGS) -framework Foundation -lMobileGestalt
+	$(CC) -fobjc-arc -O3 $(CFLAGS) serialserial.m -o serialserial $(LDFLAGS) -framework CoreFoundation -lMobileGestalt
 
 clean:
 	rm -rf cfversion ecidecid gssc ldrestart sbdidlaunch sbreload uicache uiduid uiopen localelocale serialserial *.dSYM
