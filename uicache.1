@@ -28,7 +28,7 @@
 .Os
 .Sh NAME
 .Nm uicache
-.Nd update registered applications
+.Nd Update registered applications
 .Sh SYNOPSIS
 .Nm
 .Op Fl ahlr
@@ -36,42 +36,39 @@
 .Op Fl p Ar path
 .Op Fl u Ar path
 .Sh DESCRIPTION
-The
-.Nm
-updates the applications that show on the homescreen and optionally will respring afterwards.
-.Pp
-The options are as follows:
+Update iOS registered applications and optionally restart SpringBoard.
+.Sh OPTIONS
 .Bl -tag -width indent
 .It Fl a , -all
 Rebuild the entire cache.
 This replicates the old
 .Nm
-behavior and is very slow
+behavior
 .It Fl h , -help
 Prints a help text
 .It Fl r , -respring
 Restarts SpringBoard and backboard after all other actions
 .It Fl l , -list
-Lists the bundle id and path for each registered application
-.It Fl i , -info Ar bundle id
-Shows information about the application with the specified bundle id
+Lists the bundle ID and path for each registered application
+.It Fl i , -info Ar bundleid
+Shows information about the application with the specified bundle ID
 .It Fl u , -unregister Ar path
-Removes the application at
+Unregisters an application bundle, using the specified
 .Ar path
-from the cache
+, from the cache
 .It Fl p , -path Ar path
-Adds the application at
+Registers or updates an application bundle, at the specified
 .Ar path
-to the cache
+, to the cache
 .El
 .Sh EXAMPLES
-To refresh all applications use:
+To refresh all applications
 .Dl "uicache -a"
 .Pp
-To register Sileo use:
+To register Sileo
 .Dl "uicache -p /Applications/Sileo.app"
 .Pp
-To show information about the Settings app use:
+To show information about the Settings app
 .Dl "uicache -i com.apple.preferences"
 .Sh SEE ALSO
 .Xr sbreload 1 ,
@@ -81,7 +78,7 @@ The
 .Nm
 utility first appeared in uikittools on September 14, 2008, written by
 .An Jay Freeman .
-Then was reimplemented by
+Later, it was reimplemented by
 .An CoolStar
 for the Chimera jailbreak on April 30, 2019.
 The
