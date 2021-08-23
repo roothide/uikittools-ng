@@ -2,24 +2,24 @@
 #import <dlfcn.h>
 
 void OnDidLaunch(
-    CFNotificationCenterRef center,
-    void *observer,
-    CFStringRef name,
-    const void *object,
-    CFDictionaryRef info
+	CFNotificationCenterRef center,
+	void *observer,
+	CFStringRef name,
+	const void *object,
+	CFDictionaryRef info
 ) {
-    exit(0);
+	exit(0);
 }
 
 int main(){
 	CFNotificationCenterAddObserver(
-        CFNotificationCenterGetDarwinNotifyCenter(),
-        NULL,
-        &OnDidLaunch,
-        CFSTR("SBSpringBoardDidLaunchNotification"),
-        NULL,
-        0
-    );
+		CFNotificationCenterGetDarwinNotifyCenter(),
+		NULL,
+		&OnDidLaunch,
+		CFSTR("SBSpringBoardDidLaunchNotification"),
+		NULL,
+		0
+	);
 
 	void *springboardservices = dlopen("/System/Library/PrivateFrameworks/SpringBoardServices.framework/SpringBoardServices", RTLD_NOW);
 	void *(*SBSSpringBoardServerPort)(void) = dlsym(springboardservices, "SBSSpringBoardServerPort");

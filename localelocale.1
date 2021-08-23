@@ -24,25 +24,35 @@
 .\" SUCH DAMAGE.
 .\"
 .Dd August 19, 2021
-.Dt UIDUID 1
+.Dt LOCALELOCALE 1
 .Os
 .Sh NAME
-.Nm uiduid
-.Nd print the device's UDID
+.Nm localelocale
+.Nd print the device's iOS locale
 .Sh SYNOPSIS
 .Nm
+.Op Fl ilcvh
 .Sh DESCRIPTION
 .Nm
-will print the device's UDID, then exit.
+will print the system locale in the specified format, then exit.
+.Sh OPTIONS
+.Bl -tag -width indent
+.It Fl i , -identifier
+Print the locale identifier, this is the default
+.It Fl l , -language
+Prints the language code for the locale
+.It Fl c , -country
+Prints the country code for the locale
+.It Fl v , -variant
+Prints the locale variant
+.It Fl h , -help
+Prints a help text
+.El
 .Sh SEE ALSO
-.Xr cfversion 1 ,
 .Xr ecidecid 1 ,
-.Xr serialserial 1
+.Xr uiduid 1
 .Sh HISTORY
 The
 .Nm
-utility first appeared in uikittools on August 29, 2008, written by
-.An Jay Freeman .
-Later, it was reimplemented by
-.An CoolStar
-for the Chimera jailbreak on April 30, 2019.
+utility was written for uikittools-ng on August 21, 2021, by
+.An Cameron Katri .

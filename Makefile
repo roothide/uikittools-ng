@@ -5,11 +5,11 @@ LDFLAGS ?=
 STRIP ?= strip
 LDID ?= ldid
 
-ALL := cfversion ecidecid gssc ldrestart sbdidlaunch sbreload uicache uiduid uiopen
+ALL := cfversion ecidecid gssc ldrestart sbdidlaunch sbreload uicache uiduid uiopen localelocale serialserial
 
 sign: $(ALL)
 	$(STRIP) $(ALL)
-	$(LDID) -Sent.plist cfversion ecidecid ldrestart sbdidlaunch uiduid
+	$(LDID) -Sent.plist cfversion ecidecid ldrestart sbdidlaunch uiduid localelocale serialserial
 	$(LDID) -Sgssc.plist gssc
 	$(LDID) -Ssbreload.plist sbreload
 	$(LDID) -Suicache.plist uicache
@@ -44,5 +44,11 @@ uiduid: uiduid.m ent.plist
 uiopen: uiopen.m ent.plist
 	$(CC) -fobjc-arc -O3 $(CFLAGS) uiopen.m -o uiopen $(LDFLAGS) -framework Foundation -framework MobileCoreServices
 
+localelocale: localelocale.m ent.plist
+	$(CC) -fobjc-arc -O3 $(CFLAGS) localelocale.m -o localelocale $(LDFLAGS) -framework Foundation
+
+serialserial: serialserial.m ent.plist
+	$(CC) -fobjc-arc -O3 $(CFLAGS) serialserial.m -o serialserial $(LDFLAGS) -framework CoreFoundation -lMobileGestalt
+
 clean:
-	rm -f cfversion ecidecid gssc ldrestart sbdidlaunch sbreload uicache uiduid uiopen
+	rm -rf cfversion ecidecid gssc ldrestart sbdidlaunch sbreload uicache uiduid uiopen localelocale serialserial *.dSYM
