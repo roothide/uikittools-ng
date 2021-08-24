@@ -22,7 +22,7 @@ enum outformat {
 	VARIANT
 };
 
-int main(int argc, char *argv[]) {
+int handle_locale(int argc, char *argv[]) {
 	struct option longOptions[] = {
 		{ "identifier" , no_argument, 0, 'i'},
 		{ "language" , no_argument, 0, 'l'},
