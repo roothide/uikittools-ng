@@ -1,9 +1,9 @@
-CC ?= xcrun -sdk iphoneos clang -arch arm64 -miphoneos-version-min=11.0
-CFLAGS ?=
+CC      ?= xcrun -sdk iphoneos clang -arch arm64 -miphoneos-version-min=11.0
+CFLAGS  ?=
 LDFLAGS ?=
 
-STRIP ?= strip
-LDID ?= ldid
+STRIP   ?= strip
+LDID    ?= ldid
 INSTALL ?= install
 
 ALL := gssc ldrestart sbdidlaunch sbreload uicache uiopen deviceinfo
@@ -43,19 +43,19 @@ deviceinfo: deviceinfo.c ecidecid.m uiduid.m serial.m locale.m cfversion.c
 	$(CC) -fobjc-arc -O3 $(CFLAGS) $^ -o $@ $(LDFLAGS) -framework CoreFoundation -lMobileGestalt
 
 install: sign $(ALL) $(MAN)
-	$(INSTALL) -d $(DESTDIR)/$(PREFIX)/bin/
-	$(INSTALL) -s -m755 $(ALL) $(DESTDIR)/$(PREFIX)/bin/
-	ln -sf deviceinfo $(DESTDIR)/$(PREFIX)/bin/cfversion
-	ln -sf deviceinfo $(DESTDIR)/$(PREFIX)/bin/uiduid
-	ln -sf deviceinfo $(DESTDIR)/$(PREFIX)/bin/ecidecid
-	$(INSTALL) -d $(DESTDIR)/$(PREFIX)/share/man/man1/
-	$(INSTALL) -m644 $(MAN) $(DESTDIR)/$(PREFIX)/share/man/man1/
+	$(INSTALL) -d $(DESTDIR)$(PREFIX)/bin/
+	$(INSTALL) -s -m755 $(ALL) $(DESTDIR)$(PREFIX)/bin/
+	ln -sf deviceinfo $(DESTDIR)$(PREFIX)/bin/cfversion
+	ln -sf deviceinfo $(DESTDIR)$(PREFIX)/bin/uiduid
+	ln -sf deviceinfo $(DESTDIR)$(PREFIX)/bin/ecidecid
+	$(INSTALL) -d $(DESTDIR)$(PREFIX)/share/man/man1/
+	$(INSTALL) -m644 $(MAN) $(DESTDIR)$(PREFIX)/share/man/man1/
 
 install-macosx: $(ALLMAC) $(MANMAC)
-	$(INSTALL) -d $(DESTDIR)/$(PREFIX)/bin/
-	$(INSTALL) -s -Dm755 $(ALLMAC) $(DESTDIR)/$(PREFIX)/bin/
-	$(INSTALL) -d $(DESTDIR)/$(PREFIX)/share/man/man1/
-	$(INSTALL) -Dm644 $(MANMAC) $(DESTDIR)/$(PREFIX)/share/man/man1/
+	$(INSTALL) -d $(DESTDIR)$(PREFIX)/bin/
+	$(INSTALL) -s -Dm755 $(ALLMAC) $(DESTDIR)$(PREFIX)/bin/
+	$(INSTALL) -d $(DESTDIR)$(PREFIX)/share/man/man1/
+	$(INSTALL) -Dm644 $(MANMAC) $(DESTDIR)$(PREFIX)/share/man/man1/
 
 clean:
 	rm -rf cfversion ecidecid gssc ldrestart sbdidlaunch sbreload uicache uiduid uiopen localelocale serialserial *.dSYM
