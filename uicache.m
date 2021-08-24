@@ -76,9 +76,9 @@ void help(char *name) {
 		"Modified work Copyright (C) 2021, Procursus Team. All Rights Reserved.\n\n"
 		"Update iOS registered applications and optionally restart SpringBoard\n\n"
 
-		"  --all                    Update all system and internal applications\n"
+		"  -a, --all                Update all system and internal applications\n"
 		"                              (replicates the old uicache behavior)\n"
-		"  -f, --force              Update application bundle at the specified path\n"
+		"  -f, --force              Force -a to reregister all Applications\n"
 		"  -p, --path <path>        Update application bundle at the specified path\n"
 		"  -u, --unregister <path>  Unregister application bundle at the specified path\n"
 		"  -r, --respring           Restart SpringBoard and backboardd after\n"
