@@ -7,7 +7,7 @@ LDID ?= ldid
 INSTALL ?= install
 
 ALL := gssc ldrestart sbdidlaunch sbreload uicache uiopen deviceinfo
-MAN := gssc.1 ldrestart.1 sbdidlaunch.1 sbreload.1 uicache.1 uiopen.1 deviceinfo.1 ecidecid.1 uiduid.1
+MAN := gssc.1 ldrestart.1 sbdidlaunch.1 sbreload.1 uicache.1 uiopen.1 deviceinfo.1
 ALLMAC := gssc deviceinfo
 MANMAC := gssc.1 deviceinfo.1
 
