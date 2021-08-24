@@ -73,7 +73,7 @@ int force = 0;
 void help(char *name) {
 	printf(
 		"Usage: %s [OPTION...]\n"
-		"Copyright (C) 2019, Electra Team. All Rights Reserved.\n\n"
+		"Modified work Copyright (C) 2021, Procursus Team. All Rights Reserved.\n\n"
 		"Update iOS registered applications and optionally restart SpringBoard\n\n"
 
 		"  --all                    Update all system and internal applications\n"
@@ -87,7 +87,7 @@ void help(char *name) {
 		"  -i, --info <bundleid>    Give information about given bundle id\n"
 		"  -h, --help               Give this help list.\n\n"
 
-		"Contact the Procursus team for support.\n", name);
+		"Contact the Procursus Team for support.\n", name);
 }
 
 void registerPath(char *path, int unregister) {
