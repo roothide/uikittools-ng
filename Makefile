@@ -53,9 +53,9 @@ install: sign $(ALL) $(MAN)
 
 install-macosx: $(ALLMAC) $(MANMAC)
 	$(INSTALL) -d $(DESTDIR)$(PREFIX)/bin/
-	$(INSTALL) -s -Dm755 $(ALLMAC) $(DESTDIR)$(PREFIX)/bin/
+	$(INSTALL) -s -m755 $(ALLMAC) $(DESTDIR)$(PREFIX)/bin/
 	$(INSTALL) -d $(DESTDIR)$(PREFIX)/share/man/man1/
-	$(INSTALL) -Dm644 $(MANMAC) $(DESTDIR)$(PREFIX)/share/man/man1/
+	$(INSTALL) -m644 $(MANMAC) $(DESTDIR)$(PREFIX)/share/man/man1/
 
 clean:
-	rm -rf cfversion ecidecid gssc ldrestart sbdidlaunch sbreload uicache uiduid uiopen localelocale serialserial *.dSYM
+	rm -rf gssc ldrestart sbdidlaunch sbreload uicache uiopen deviceinfo *.dSYM
