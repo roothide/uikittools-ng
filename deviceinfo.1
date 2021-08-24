@@ -29,23 +29,47 @@
 .\" ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 .\" POSSIBILITY OF SUCH DAMAGE.
 .\"
-.Dd August 19, 2021
-.Dt GSSC 1
+.Dd August 23, 2021
+.Dt DEVICEINFO 1
 .Os
 .Sh NAME
-.Nm gssc
-.Nd print out device capabilities
+.Nm deviceinfo
+.Nd print various device information
 .Sh SYNOPSIS
 .Nm
+.Oo Ar cfversion | ecid | locale | serial | uniqueid Oc
+.Op arguments ...
 .Sh DESCRIPTION
-The
 .Nm
-utility will print the device capabilities in NeXTSTEP plist format.
+will print the specified information, then exit.
+.Sh SUBCOMMANDS
+.Bl -tag -width indent
+.It Ar cfversion
+Print the device's CoreFoundation version.
+.It Ar ecid
+Print the device's ECID.
+.It Ar locale Op Fl ilcvh
+Prints the system locale in the specified format.
+The following options are available
+.Bl -tag -width indent
+.It Fl i , -identifier
+Print the locale identifier, this is the default
+.It Fl l , -language
+Prints the language code for the locale
+.It Fl c , -country
+Prints the country code for the locale
+.It Fl v , -variant
+Prints the locale variant
+.It Fl h , -help
+Prints a help text
+.El
+.It Ar serial
+Print the device's serial number.
+.It Ar uniqueid
+Print the device's UDID.
+.El
 .Sh HISTORY
 The
 .Nm
-utility first appeared in uikittools on April 6, 2010, written by
-.An Jay Freeman .
-Later, it was reimplemented by
-.An CoolStar
-for the Chimera jailbreak on April 30, 2019.
+utility was written for uikittools-ng on August 21, 2021, by
+.An Cameron Katri .

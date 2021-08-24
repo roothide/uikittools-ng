@@ -4,24 +4,22 @@ LDFLAGS ?=
 
 STRIP ?= strip
 LDID ?= ldid
+INSTALL ?= install
 
-ALL := cfversion ecidecid gssc ldrestart sbdidlaunch sbreload uicache uiduid uiopen localelocale serialserial
+ALL := gssc ldrestart sbdidlaunch sbreload uicache uiopen deviceinfo
+MAN := gssc.1 ldrestart.1 sbdidlaunch.1 sbreload.1 uicache.1 uiopen.1 deviceinfo.1 ecidecid.1 uiduid.1
+ALLMAC := gssc deviceinfo
+MANMAC := gssc.1 deviceinfo.1
 
 sign: $(ALL)
 	$(STRIP) $(ALL)
-	$(LDID) -Sent.plist cfversion ecidecid ldrestart sbdidlaunch uiduid localelocale serialserial
+	$(LDID) -Sent.plist ldrestart sbdidlaunch deviceinfo
 	$(LDID) -Sgssc.plist gssc
 	$(LDID) -Ssbreload.plist sbreload
 	$(LDID) -Suicache.plist uicache
 	$(LDID) -Suiopen.plist uiopen
 
 all: sign
-
-cfversion: cfversion.c ent.plist
-	$(CC) -O3 $(CFLAGS) cfversion.c -o cfversion $(LDFLAGS) -framework CoreFoundation
-
-ecidecid: ecidecid.m ent.plist
-	$(CC) -fobjc-arc -O3 $(CFLAGS) ecidecid.m -o ecidecid $(LDFLAGS) -framework CoreFoundation -lMobileGestalt
 
 gssc: gssc.m gssc.plist
 	$(CC) -fobjc-arc -O3 $(CFLAGS) gssc.m -o gssc $(LDFLAGS) -framework Foundation -lMobileGestalt
@@ -38,17 +36,26 @@ sbreload: sbreload.m sbreload-launchd.c sbreload.plist
 uicache: uicache.m uicache.plist
 	$(CC) -fobjc-arc -O3 $(CFLAGS) uicache.m -o uicache -framework Foundation $(LDFLAGS) -framework MobileCoreServices
 
-uiduid: uiduid.m ent.plist
-	$(CC) -fobjc-arc -O3 $(CFLAGS) uiduid.m -o uiduid $(LDFLAGS) -framework Foundation -lMobileGestalt
-
 uiopen: uiopen.m ent.plist
 	$(CC) -fobjc-arc -O3 $(CFLAGS) uiopen.m -o uiopen $(LDFLAGS) -framework Foundation -framework MobileCoreServices
 
-localelocale: localelocale.m ent.plist
-	$(CC) -fobjc-arc -O3 $(CFLAGS) localelocale.m -o localelocale $(LDFLAGS) -framework Foundation
+deviceinfo: deviceinfo.c ecidecid.m uiduid.m serial.m locale.m cfversion.c
+	$(CC) -fobjc-arc -O3 $(CFLAGS) $^ -o $@ $(LDFLAGS) -framework CoreFoundation -lMobileGestalt
 
-serialserial: serialserial.m ent.plist
-	$(CC) -fobjc-arc -O3 $(CFLAGS) serialserial.m -o serialserial $(LDFLAGS) -framework CoreFoundation -lMobileGestalt
+install: sign $(ALL) $(MAN)
+	$(INSTALL) -d $(DESTDIR)/$(PREFIX)/bin/
+	$(INSTALL) -s -m755 $(ALL) $(DESTDIR)/$(PREFIX)/bin/
+	ln -sf deviceinfo $(DESTDIR)/$(PREFIX)/bin/cfversion
+	ln -sf deviceinfo $(DESTDIR)/$(PREFIX)/bin/uiduid
+	ln -sf deviceinfo $(DESTDIR)/$(PREFIX)/bin/ecidecid
+	$(INSTALL) -d $(DESTDIR)/$(PREFIX)/share/man/man1/
+	$(INSTALL) -m644 $(MAN) $(DESTDIR)/$(PREFIX)/share/man/man1/
+
+install-macosx: $(ALLMAC) $(MANMAC)
+	$(INSTALL) -d $(DESTDIR)/$(PREFIX)/bin/
+	$(INSTALL) -s -Dm755 $(ALLMAC) $(DESTDIR)/$(PREFIX)/bin/
+	$(INSTALL) -d $(DESTDIR)/$(PREFIX)/share/man/man1/
+	$(INSTALL) -Dm644 $(MANMAC) $(DESTDIR)/$(PREFIX)/share/man/man1/
 
 clean:
 	rm -rf cfversion ecidecid gssc ldrestart sbdidlaunch sbreload uicache uiduid uiopen localelocale serialserial *.dSYM

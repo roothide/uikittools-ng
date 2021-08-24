@@ -14,7 +14,7 @@ static bool STRINGS_ARE_EQUAL(const char* a, const char* b) {
 }
 
 int main(int argc, const char** argv) {
-    int rc = handle_backwards_compat(basename(argv[0]), argc, argv);
+    int rc = handle_backwards_compat(basename((char *)argv[0]), argc, argv);
     if (rc != -1) {
         return rc;
     }

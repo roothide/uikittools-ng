@@ -3,9 +3,9 @@
 #import <dlfcn.h>
 #import <Foundation/Foundation.h>
 
-void help(char *name) {
+void help() {
 	printf(
-		"Usage: %s [OPTION...]\n"
+		"Usage: deviceinfo locale [OPTION...]\n"
 		"Print the current locale\n\n"
 
 		" -h --help      Give this help list.\n"
@@ -13,7 +13,8 @@ void help(char *name) {
 		" -l --language  Print the language code\n"
 		" -c --country   Print the country code\n"
 		" -v --variant   Print the variant code\n\n"
-		"If multiple output formats are specified the last will be used\n", name); }
+		"If multiple output formats are specified the last will be used\n");
+}
 
 enum outformat {
 	IDENTIFIER,
@@ -51,7 +52,7 @@ int handle_locale(int argc, char *argv[]) {
 				format = VARIANT;
 				break;
 			case 'h':
-				help(argv[0]);
+				help();
 				return 0;
 				break;
 		}
