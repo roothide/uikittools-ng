@@ -68,23 +68,26 @@ typedef NS_OPTIONS(NSUInteger, SBSRelaunchActionOptions) {
 #define	CS_OPS_CDHASH		5	/* get code directory hash */
 int csops(pid_t pid, unsigned int  ops, void * useraddr, size_t usersize);
 
+int force = 0;
+
 void help(char *name) {
 	printf(
 		"Usage: %s [OPTION...]\n"
 		"Copyright (C) 2019, Electra Team. All Rights Reserved.\n\n"
 		"Update iOS registered applications and optionally restart SpringBoard\n\n"
 
-		"  --all                Update all system and internal applications\n"
-		"                          (replicates the old uicache behavior)\n"
-		"  --path <path>        Update application bundle at the specified path\n"
-		"  --unregister <path>  Unregister application bundle at the specified path\n"
-		"  --respring           Restart SpringBoard and backboardd after\n"
-		"                          updating applications.\n"
-		"  --list               List the bundle ids of installed apps\n"
-		"  --info <bundleid>    Give information about given bundle id\n"
-		"  --help               Give this help list.\n\n"
+		"  --all                    Update all system and internal applications\n"
+		"                              (replicates the old uicache behavior)\n"
+		"  -f, --force              Update application bundle at the specified path\n"
+		"  -p, --path <path>        Update application bundle at the specified path\n"
+		"  -u, --unregister <path>  Unregister application bundle at the specified path\n"
+		"  -r, --respring           Restart SpringBoard and backboardd after\n"
+		"                              updating applications.\n"
+		"  -l, --list               List the bundle ids of installed apps\n"
+		"  -i, --info <bundleid>    Give information about given bundle id\n"
+		"  -h, --help               Give this help list.\n\n"
 
-		"Email the Electra team via Sileo for support.\n", name);
+		"Contact the Procursus team for support.\n", name);
 }
 
 void registerPath(char *path, int unregister) {
@@ -200,6 +203,59 @@ void infoForBundleID(NSString *bundleID) {
 	}
 }
 
+void registerAll() {
+	if (force) {
+		[[LSApplicationWorkspace defaultWorkspace] _LSPrivateRebuildApplicationDatabasesForSystemApps:YES internal:YES user:NO];
+		return;
+	}
+
+	NSArray<NSString *> *files = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:@"/Applications" error:nil];
+
+	NSMutableSet<NSString*> *installed = [[NSMutableSet alloc] init];
+
+	for (NSString *file in files) {
+		if ([file hasSuffix:@".app"] &&
+		    [[NSFileManager defaultManager]
+		        fileExistsAtPath:[NSString
+		        stringWithFormat:@"/Applications/%@/Info.plist", file]] &&
+		    [[NSFileManager defaultManager]
+		        fileExistsAtPath:[NSString stringWithFormat:@"/Applications/%@/%@",
+		        file, [[NSDictionary dictionaryWithContentsOfURL:[NSURL
+		        fileURLWithPath:[NSString stringWithFormat:@"/Applications/%@/Info.plist", file]] error:nil]
+		        valueForKey:@"CFBundleExecutable"]]])
+		{
+			[installed addObject:[NSString stringWithFormat:@"/Applications/%@", file]];
+		}
+	}
+
+	NSMutableSet<NSString*> *registered = [[NSMutableSet alloc] init];
+
+	LSApplicationWorkspace *workspace = [LSApplicationWorkspace defaultWorkspace];
+	for (LSApplicationProxy *app in [workspace allApplications]) {
+		if ([[NSString stringWithUTF8String:[[app bundleURL] fileSystemRepresentation]] hasPrefix:@"/Applications"]) {
+			[registered addObject:[NSString stringWithUTF8String:[[app bundleURL] fileSystemRepresentation]]];
+		}
+	}
+
+	NSMutableSet<NSString*> *toRegister = [[NSMutableSet alloc] init];
+	for (NSString *app in installed) {
+		if (![registered containsObject:app]) {
+			[toRegister addObject:app];
+		}
+	}
+
+	NSMutableSet<NSString*> *toUnregister = [[NSMutableSet alloc] init];
+	for (NSString *app in registered) {
+		if (![installed containsObject:app]) {
+			[toUnregister addObject:app];
+		}
+	}
+	for (NSString *app in toRegister)
+		registerPath((char *)[app UTF8String], 0);
+	for (NSString *app in toUnregister)
+		registerPath((char *)[app UTF8String], 1);
+}
+
 int main(int argc, char *argv[]){
 	@autoreleasepool {
 		int all = 0;
@@ -255,6 +311,9 @@ int main(int argc, char *argv[]){
 				case 'i':
 					[infoSet addObject:[NSString stringWithUTF8String:strdup(optarg)]];
 					break;
+				case 'f':
+					force = 1;
+					break;
 			}
 		}
 
@@ -286,11 +345,10 @@ int main(int argc, char *argv[]){
 		}
 		
 		if (all){
-			if (getenv("SILEO")){
+			if (getenv("SILEO"))
 				fprintf(stderr, "Error: -a may not be used while installing/uninstalling in Sileo. Ignoring.\n");
-			} else {
-				[[LSApplicationWorkspace defaultWorkspace] _LSPrivateRebuildApplicationDatabasesForSystemApps:YES internal:YES user:NO];
-			}
+			else
+				registerAll();
 		}
 
 		if (respring){
