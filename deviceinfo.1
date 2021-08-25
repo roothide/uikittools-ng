@@ -1,0 +1,54 @@
+.\"-
+.\" Copyright (c) 2019 CoolStar
+.\" Modified work Copyright (c) 2020-2021 ProcursusTeam
+.\" SPDX-License-Identifier: BSD-4-Clause
+.\"
+.Dd August 23, 2021
+.Dt DEVICEINFO 1
+.Os
+.Sh NAME
+.Nm deviceinfo
+.Nd print various device information
+.Sh SYNOPSIS
+.Nm
+.Oo Ar cfversion | ecid | locale | serial | uniqueid Oc
+.Op arguments ...
+.Sh DESCRIPTION
+.Nm
+will print the specified information, then exit.
+.Sh SUBCOMMANDS
+.Bl -tag -width indent
+.It Ar cfversion
+Print the device's CoreFoundation version.
+.It Ar ecid
+Print the device's ECID.
+.It Ar locale Op Fl ilcvh
+Prints the system locale in the specified format.
+The following options are available
+.Bl -tag -width indent
+.It Fl i , -identifier
+Print the locale identifier, this is the default
+.It Fl l , -language
+Prints the language code for the locale
+.It Fl c , -country
+Prints the country code for the locale
+.It Fl v , -variant
+Prints the locale variant
+.It Fl h , -help
+Prints a help text
+.El
+.It Ar serial
+Print the device's serial number.
+.It Ar uniqueid
+Print the device's UDID.
+.El
+.Sh HISTORY
+The
+.Nm
+utility was written for uikittools-ng on August 23, 2021, by
+.An sunchipnacho
+to replace
+.Nm cfversion ,
+.Nm ecidecid ,
+and
+.Nm uiduid .
