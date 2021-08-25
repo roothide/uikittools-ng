@@ -11,7 +11,7 @@
 .Nd Update registered applications
 .Sh SYNOPSIS
 .Nm
-.Op Fl ahlr
+.Op Fl afhlr
 .Op Fl i Ar id
 .Op Fl p Ar path
 .Op Fl u Ar path
@@ -24,6 +24,13 @@ Rebuild the entire cache.
 This replicates the old
 .Nm
 behavior
+.It Fl f , -force
+Forces all applications to be reregistered when used with
+.Fl a
+rather than just the changes.
+This option will make
+.Fl a
+significantly slower.
 .It Fl h , -help
 Prints a help text
 .It Fl r , -respring
