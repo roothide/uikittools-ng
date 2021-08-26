@@ -6,8 +6,8 @@
 #import <MobileCoreServices/MobileCoreServices.h>
 #import <Foundation/NSURL.h>
 
-#ifndef APPPATH
-#define APPPATH @"/private/preboot/procursus/Applications
+#ifndef APP_PATH
+#define APP_PATH @"/private/preboot/procursus/Applications
 #endif
 
 @interface _LSApplicationState : NSObject
@@ -224,7 +224,7 @@ void registerAll() {
 	}
 
 	NSArray<NSString *> *files = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:@"/Applications" error:nil];
-	NSArray<NSString *> *filesSecondary = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:APPPATH error:nil];
+	NSArray<NSString *> *filesSecondary = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:APP_PATH error:nil];
 
 	NSMutableSet<NSString*> *installed = [[NSMutableSet alloc] init];
 
@@ -247,14 +247,14 @@ void registerAll() {
 		if ([file hasSuffix:@".app"] &&
 		    [[NSFileManager defaultManager]
 		        fileExistsAtPath:[NSString
-		        stringWithFormat:@"%@/%@/Info.plist", APPPATH, file]] &&
+		        stringWithFormat:@"%@/%@/Info.plist", APP_PATH, file]] &&
 		    [[NSFileManager defaultManager]
 		        fileExistsAtPath:[NSString stringWithFormat:@"%@/%@/%@",
-		        APPPATH, file, [[NSDictionary dictionaryWithContentsOfURL:[NSURL
-		        fileURLWithPath:[NSString stringWithFormat:@"%@/%@/Info.plist", APPPATH, file]] error:nil]
+		        APP_PATH, file, [[NSDictionary dictionaryWithContentsOfURL:[NSURL
+		        fileURLWithPath:[NSString stringWithFormat:@"%@/%@/Info.plist", APP_PATH, file]] error:nil]
 		        valueForKey:@"CFBundleExecutable"]]])
 		{
-			[installed addObject:[NSString stringWithFormat:@"%@/%@", APPPATH, file]];
+			[installed addObject:[NSString stringWithFormat:@"%@/%@", APP_PATH, file]];
 		}
 	}
 
