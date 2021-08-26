@@ -100,7 +100,7 @@ void registerPath(char *path, int unregister) {
 		path = (char *)[[app bundleURL] fileSystemRepresentation];
 	}
 
-	if ([path hasPrefix:@"/private/var/containers/Bundle/Application"] || [path hasPrefix:@"/var/containers/Bundle/Application"]) {
+	if ([[NSString stringWithUTF8String:path] hasPrefix:@"/private/var/containers/Bundle/Application"] || [[NSString stringWithUTF8String:path] hasPrefix:@"/var/containers/Bundle/Application"]) {
 		printf("uicache does not support App Store apps.\n");
 		if (force)
 			printf("Continuing anyway...\n");
