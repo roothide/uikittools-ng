@@ -6,6 +6,10 @@
 #import <MobileCoreServices/MobileCoreServices.h>
 #import <Foundation/NSURL.h>
 
+#ifndef APPPATH
+#define APPPATH @"/private/preboot/procursus/Applications
+#endif
+
 @interface _LSApplicationState : NSObject
 -(BOOL)isValid;
 @end
@@ -220,7 +224,7 @@ void registerAll() {
 	}
 
 	NSArray<NSString *> *files = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:@"/Applications" error:nil];
-	NSArray<NSString *> *filesSecondary = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:@"/private/preboot/procursus/Applications" error:nil];
+	NSArray<NSString *> *filesSecondary = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:APPPATH error:nil];
 
 	NSMutableSet<NSString*> *installed = [[NSMutableSet alloc] init];
 
@@ -243,14 +247,14 @@ void registerAll() {
 		if ([file hasSuffix:@".app"] &&
 		    [[NSFileManager defaultManager]
 		        fileExistsAtPath:[NSString
-		        stringWithFormat:@"/private/preboot/procursus/Applications/%@/Info.plist", file]] &&
+		        stringWithFormat:@"%@/%@/Info.plist", APPPATH, file]] &&
 		    [[NSFileManager defaultManager]
-		        fileExistsAtPath:[NSString stringWithFormat:@"/private/preboot/procursus/Applications/%@/%@",
-		        file, [[NSDictionary dictionaryWithContentsOfURL:[NSURL
-		        fileURLWithPath:[NSString stringWithFormat:@"/private/preboot/procursus/Applications/%@/Info.plist", file]] error:nil]
+		        fileExistsAtPath:[NSString stringWithFormat:@"%@/%@/%@",
+		        APPPATH, file, [[NSDictionary dictionaryWithContentsOfURL:[NSURL
+		        fileURLWithPath:[NSString stringWithFormat:@"%@/%@/Info.plist", APPPATH, file]] error:nil]
 		        valueForKey:@"CFBundleExecutable"]]])
 		{
-			[installed addObject:[NSString stringWithFormat:@"/private/preboot/procursus/Applications/%@", file]];
+			[installed addObject:[NSString stringWithFormat:@"%@/%@", APPPATH, file]];
 		}
 	}
 
@@ -258,7 +262,7 @@ void registerAll() {
 
 	LSApplicationWorkspace *workspace = [LSApplicationWorkspace defaultWorkspace];
 	for (LSApplicationProxy *app in [workspace allApplications]) {
-		if ([[NSString stringWithUTF8String:[[app bundleURL] fileSystemRepresentation]] hasPrefix:@"/Applications"] || [[NSString stringWithUTF8String:[[app bundleURL] fileSystemRepresentation]] hasPrefix:@"/private/preboot/procursus/Applications"]) {
+		if ([[NSString stringWithUTF8String:[[app bundleURL] fileSystemRepresentation]] hasPrefix:@"/Applications"] || [[NSString stringWithUTF8String:[[app bundleURL] fileSystemRepresentation]] hasPrefix:APPPATH]) {
 			[registered addObject:[NSString stringWithUTF8String:[[app bundleURL] fileSystemRepresentation]]];
 		}
 	}
