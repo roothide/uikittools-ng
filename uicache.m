@@ -262,7 +262,7 @@ void registerAll() {
 
 	LSApplicationWorkspace *workspace = [LSApplicationWorkspace defaultWorkspace];
 	for (LSApplicationProxy *app in [workspace allApplications]) {
-		if ([[NSString stringWithUTF8String:[[app bundleURL] fileSystemRepresentation]] hasPrefix:@"/Applications"] || [[NSString stringWithUTF8String:[[app bundleURL] fileSystemRepresentation]] hasPrefix:APPPATH]) {
+		if ([[NSString stringWithUTF8String:[[app bundleURL] fileSystemRepresentation]] hasPrefix:@"/Applications"] || [[NSString stringWithUTF8String:[[app bundleURL] fileSystemRepresentation]] hasPrefix:APP_PATH]) {
 			[registered addObject:[NSString stringWithUTF8String:[[app bundleURL] fileSystemRepresentation]]];
 		}
 	}
