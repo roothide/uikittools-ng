@@ -11,6 +11,8 @@ MAN := gssc.1 ldrestart.1 sbdidlaunch.1 sbreload.1 uicache.1 uiopen.1 deviceinfo
 ALLMAC := gssc deviceinfo
 MANMAC := gssc.1 deviceinfo.1
 
+APP_PATH ?= $(MEMO_PREFIX)/Applications
+
 sign: $(ALL)
 	$(STRIP) $(ALL)
 	$(LDID) -Sent.plist ldrestart sbdidlaunch deviceinfo
@@ -34,7 +36,7 @@ sbreload: sbreload.m sbreload-launchd.c sbreload.plist
 	$(CC) -fobjc-arc -O3 $(CFLAGS) sbreload.m sbreload-launchd.c -o sbreload $(LDFLAGS) -framework Foundation
 
 uicache: uicache.m uicache.plist
-	$(CC) -fobjc-arc -O3 $(CFLAGS) uicache.m -o uicache -framework Foundation $(LDFLAGS) -framework MobileCoreServices
+	$(CC) -fobjc-arc -O3 $(CFLAGS) uicache.m -o uicache -framework Foundation $(LDFLAGS) -framework MobileCoreServices -DAPP_PATH="@\"$(APP_PATH)\""
 
 uiopen: uiopen.m ent.plist
 	$(CC) -fobjc-arc -O3 $(CFLAGS) uiopen.m -o uiopen $(LDFLAGS) -framework Foundation -framework MobileCoreServices

@@ -6,6 +6,10 @@
 #import <MobileCoreServices/MobileCoreServices.h>
 #import <Foundation/NSURL.h>
 
+#ifndef APP_PATH
+#define APP_PATH @"/private/preboot/procursus/Applications
+#endif
+
 @interface _LSApplicationState : NSObject
 -(BOOL)isValid;
 @end
@@ -79,10 +83,11 @@ void help(char *name) {
 		"  -a, --all                Update all system and internal applications\n"
 		"                              (replicates the old uicache behavior)\n"
 		"  -f, --force              Force -a to reregister all Applications\n"
+		"                              and modify App Store apps\n"
 		"  -p, --path <path>        Update application bundle at the specified path\n"
 		"  -u, --unregister <path>  Unregister application bundle at the specified path\n"
 		"  -r, --respring           Restart SpringBoard and backboardd after\n"
-		"                              updating applications.\n"
+		"                              updating applications\n"
 		"  -l, --list               List the bundle ids of installed apps\n"
 		"  -i, --info <bundleid>    Give information about given bundle id\n"
 		"  -h, --help               Give this help list.\n\n"
@@ -98,6 +103,15 @@ void registerPath(char *path, int unregister) {
 		LSApplicationProxy *app = [LSApplicationProxy applicationProxyForIdentifier:[NSString stringWithUTF8String:path]];
 		path = (char *)[[app bundleURL] fileSystemRepresentation];
 	}
+
+	if ([[NSString stringWithUTF8String:path] hasPrefix:@"/private/var/containers/Bundle/Application"] || [[NSString stringWithUTF8String:path] hasPrefix:@"/var/containers/Bundle/Application"]) {
+		printf("uicache does not support App Store apps.\n");
+		if (force)
+			printf("Continuing anyway...\n");
+		else
+			return;
+	}
+
 	NSString *rawPath = [NSString stringWithUTF8String:path];
 	rawPath = [rawPath stringByResolvingSymlinksInPath];
 
@@ -210,6 +224,7 @@ void registerAll() {
 	}
 
 	NSArray<NSString *> *files = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:@"/Applications" error:nil];
+	NSArray<NSString *> *filesSecondary = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:APP_PATH error:nil];
 
 	NSMutableSet<NSString*> *installed = [[NSMutableSet alloc] init];
 
@@ -228,11 +243,26 @@ void registerAll() {
 		}
 	}
 
+	for (NSString *file in filesSecondary) {
+		if ([file hasSuffix:@".app"] &&
+		    [[NSFileManager defaultManager]
+		        fileExistsAtPath:[NSString
+		        stringWithFormat:@"%@/%@/Info.plist", APP_PATH, file]] &&
+		    [[NSFileManager defaultManager]
+		        fileExistsAtPath:[NSString stringWithFormat:@"%@/%@/%@",
+		        APP_PATH, file, [[NSDictionary dictionaryWithContentsOfURL:[NSURL
+		        fileURLWithPath:[NSString stringWithFormat:@"%@/%@/Info.plist", APP_PATH, file]] error:nil]
+		        valueForKey:@"CFBundleExecutable"]]])
+		{
+			[installed addObject:[NSString stringWithFormat:@"%@/%@", APP_PATH, file]];
+		}
+	}
+
 	NSMutableSet<NSString*> *registered = [[NSMutableSet alloc] init];
 
 	LSApplicationWorkspace *workspace = [LSApplicationWorkspace defaultWorkspace];
 	for (LSApplicationProxy *app in [workspace allApplications]) {
-		if ([[NSString stringWithUTF8String:[[app bundleURL] fileSystemRepresentation]] hasPrefix:@"/Applications"]) {
+		if ([[NSString stringWithUTF8String:[[app bundleURL] fileSystemRepresentation]] hasPrefix:@"/Applications"] || [[NSString stringWithUTF8String:[[app bundleURL] fileSystemRepresentation]] hasPrefix:APP_PATH]) {
 			[registered addObject:[NSString stringWithUTF8String:[[app bundleURL] fileSystemRepresentation]]];
 		}
 	}
