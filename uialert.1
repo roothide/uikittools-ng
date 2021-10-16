@@ -22,6 +22,17 @@ The title will be set to
 .Ar title .
 It will return the index of the selected button to
 .Ar stdout .
+.Ss OUTPUT
+.Bl -tag -width 4n -offset indent -compact
+.It Sy 0
+The primary button was pressed.
+.It Sy 1
+The secondary button was pressed.
+.It Sy 2
+The tertiary button was pressed.
+.It Sy 3
+The alert timed out or was closed without a response.
+.El
 .Sh OPTIONS
 .Bl -tag -width indent
 .It Fl b , -body Ar body

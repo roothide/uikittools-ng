@@ -17,9 +17,9 @@ void usage() {
 		"  -t, --tertiary <text>    Third button text\n"
 		"      --timeout <num>      Number of seconds to wait before exiting (0-120)\n\n"
 		"Output:\n"
-		"  0 - default button\n"
-		"  1 - second button\n"
-		"  2 - third button\n"
+		"  0 - primary button\n"
+		"  1 - secondary button\n"
+		"  2 - tertiary button\n"
 		"  3 - timeout/cancel\n\n"
 		"Contact the Procursus Team for support.\n");
 	exit(1);
