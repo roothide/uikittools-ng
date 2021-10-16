@@ -6,10 +6,10 @@ STRIP   ?= strip
 LDID    ?= ldid
 INSTALL ?= install
 
-ALL := gssc ldrestart sbdidlaunch sbreload uicache uiopen deviceinfo
-MAN := gssc.1 ldrestart.1 sbdidlaunch.1 sbreload.1 uicache.1 uiopen.1 deviceinfo.1
-ALLMAC := gssc deviceinfo
-MANMAC := gssc.1 deviceinfo.1
+ALL := gssc ldrestart sbdidlaunch sbreload uicache uiopen deviceinfo uialert
+MAN := gssc.1 ldrestart.1 sbdidlaunch.1 sbreload.1 uicache.1 uiopen.1 deviceinfo.1 uialert.1
+ALLMAC := gssc deviceinfo uialert
+MANMAC := gssc.1 deviceinfo.1 uialert.1
 
 APP_PATH ?= $(MEMO_PREFIX)/Applications
 
@@ -31,6 +31,9 @@ ldrestart: ldrestart.c ent.plist
 
 sbdidlaunch: sbdidlaunch.c ent.plist
 	$(CC) -O3 $(CFLAGS) sbdidlaunch.c -o sbdidlaunch $(LDFLAGS) -framework CoreFoundation
+
+uialert: uialert.m strtonum.c ent.plist
+	$(CC) -fobjc-arc -O3 $(CFLAGS) uialert.m strtonum.c -o uialert $(LDFLAGS) -framework CoreFoundation
 
 sbreload: sbreload.m sbreload-launchd.c sbreload.plist
 	$(CC) -fobjc-arc -O3 $(CFLAGS) sbreload.m sbreload-launchd.c -o sbreload $(LDFLAGS) -framework Foundation
@@ -60,4 +63,4 @@ install-macosx: $(ALLMAC) $(MANMAC)
 	$(INSTALL) -m644 $(MANMAC) $(DESTDIR)$(PREFIX)/share/man/man1/
 
 clean:
-	rm -rf gssc ldrestart sbdidlaunch sbreload uicache uiopen deviceinfo *.dSYM
+	rm -rf gssc ldrestart sbdidlaunch sbreload uicache uiopen deviceinfo uialert *.dSYM
