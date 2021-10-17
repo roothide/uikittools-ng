@@ -15,7 +15,7 @@ void usage() {
 		"  -p, --primary <text>     Default button text instead of \"OK\"\n"
 		"  -s, --secondary <text>   Second button text\n"
 		"  -t, --tertiary <text>    Third button text\n"
-		"      --timeout <num>      Number of seconds to wait before exiting (0-120)\n\n"
+		"      --timeout <num>      Number of seconds to wait before exiting\n\n"
 		"Output:\n"
 		"  0 - primary button\n"
 		"  1 - secondary button\n"
@@ -60,7 +60,7 @@ int main(int argc, char **argv)
 			otherButton = optarg;
 			break;
 		case 0:
-			timeout = strtonum(optarg, 0, 120, &errstr);
+			timeout = strtonum(optarg, 0, INT_MAX, &errstr);
 			if (errstr != NULL)
 				errx(1, "the timout is %s: %s", errstr, optarg);
 			break;
