@@ -7,7 +7,7 @@
 
 void usage() {
 	printf(
-		"Usage: uialert [-b body] [-p primary] [-s second] [-t third] [--timeout seconds] title\n"
+		"Usage: uialert [-b body] [-p primary] [-s second] [-t third] [--timeout number] title\n"
 		"Copyright (C) 2021, Procursus Team. All Rights Reserved.\n\n"
 		"Display an alert\n\n"
 
