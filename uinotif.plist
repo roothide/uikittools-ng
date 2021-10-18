@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>platform-application</key>
+	<true/>
+	<key>com.apple.private.skip-library-validation</key>
+	<true/>
+	<key>com.apple.private.security.no-container</key>
+	<true/>
+	<key>com.apple.localnotification.schedulingproxy</key>
+	<true/>
+	<key>com.apple.usernotification.notificationschedulerproxy</key>
+	<true/>
+	<key>SBAppUsesLocalNotifications</key>
+	<true/>
+	<key>com.apple.private.notificationcenterui.alerts</key>
+	<true/>
+	<key>com.apple.private.notificationcenter-system</key>
+	<true/>
+	<key>com.apple.developer.notificationcenter-identifiers</key>
+	<true/>
+	<key>com.apple.usernotification.notificationregistrarproxy</key>
+	<true/>
+	<key>com.apple.usernotification.proxy</key>
+	<true/>
+	<key>com.apple.usernotifications.legacy-extension</key>
+	<true/>
+	<key>com.apple.private.usernotifications.settings</key>
+	<array>
+		<string>critical-alerts</string>
+	</array>
+	<key>com.apple.developer.usernotifications.critical-alerts</key>
+	<true/>
+</dict>
+</plist>

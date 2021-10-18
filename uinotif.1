@@ -1,0 +1,47 @@
+.\"-
+.\" Copyright (c) 2020-2021 ProcursusTeam
+.\" SPDX-License-Identifier: BSD-4-Clause
+.\"
+.Dd October 15, 2021
+.Dt UINOTIF 1
+.Os
+.Sh NAME
+.Nm uinotif
+.Nd Send a local iOS notification
+.Sh SYNOPSIS
+.Nm
+.Op Fl b Ar body
+.Op Fl d Ar number
+.Op Fl i Ar bundleid
+.Op Fl s Ar subtitle
+.Ar title
+.Sh DESCRIPTION
+Send an iOS notification with a title of
+.Ar title .
+By default, the notification will be sent as the Settings app.
+The app that the notification is sent as must have permission to send notifications.
+.Sh OPTIONS
+.Bl -tag -width indent
+.It Fl b , -body Ar body
+Set the notification's body text to
+.Ar body .
+.It Fl d , -delay Ar number
+After
+.Ar number
+seconds, send the notification.
+.It Fl i , -identifier Ar bundleid
+Send the notification as the application with a bundle ID of
+.Ar bundleid .
+By default they will be sent with a bundle ID of com.apple.Preferences.
+.It Fl s , -subtitle Ar subtitle
+Set the subtitle text to be
+.Ar subtitle ,
+if unset, the subtitle will not show.
+.El
+.Sh SEE ALSO
+.Xr uialert 1
+.Sh HISTORY
+The
+.Nm
+utility first appeared in uikittools-ng on October 17, 2021, written by
+.An Cameron Katri .
