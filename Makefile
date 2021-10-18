@@ -75,4 +75,4 @@ install-macosx: $(ALLMAC) $(MANMAC)
 	$(INSTALL) -m644 $(MANMAC) $(DESTDIR)$(PREFIX)/share/man/man1/
 
 clean:
-	rm -rf gssc ldrestart sbdidlaunch sbreload uicache uiopen deviceinfo uialert uisave *.dSYM
+	rm -rf $(ALL) $(ALLMAC) *.dSYM
