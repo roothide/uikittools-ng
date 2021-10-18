@@ -7,7 +7,7 @@ uiopen
 deviceinfo
 uialert
 uishoot
-uinotif
+uinotify
 compile_commands.json
 .cache
 include/
