@@ -6,8 +6,8 @@ STRIP   ?= strip
 LDID    ?= ldid
 INSTALL ?= install
 
-ALL := gssc ldrestart sbdidlaunch sbreload uicache uiopen deviceinfo uialert uishoot uinotif
-MAN := gssc.1 ldrestart.1 sbdidlaunch.1 sbreload.1 uicache.1 uiopen.1 deviceinfo.1 uialert.1 uishoot.1 uinotif.1
+ALL := gssc ldrestart sbdidlaunch sbreload uicache uiopen deviceinfo uialert uishoot uinotify
+MAN := gssc.1 ldrestart.1 sbdidlaunch.1 sbreload.1 uicache.1 uiopen.1 deviceinfo.1 uialert.1 uishoot.1 uinotify.1
 ALLMAC := gssc deviceinfo uialert
 MANMAC := gssc.1 deviceinfo.1 uialert.1
 
@@ -21,7 +21,7 @@ sign: $(ALL)
 	$(LDID) -Suicache.plist uicache
 	$(LDID) -Suiopen.plist uiopen
 	$(LDID) -Suishoot.plist uishoot
-	$(LDID) -Suinotif.plist uinotif
+	$(LDID) -Suinotify.plist uinotify
 
 all: sign
 
@@ -49,8 +49,8 @@ uiopen: uiopen.m ent.plist
 uishoot: uishoot.m strtonum.c uishoot.plist
 	$(CC) -fobjc-arc -O3 $(CFLAGS) uishoot.m strtonum.c -o uishoot $(LDFLAGS) -framework ImageIO -framework Photos -framework UIKit
 
-uinotif: uinotif.m strtonum.c uinotif.plist
-	$(CC) -fobjc-arc -O3 $(CFLAGS) uinotif.m strtonum.c -o uinotif $(LDFLAGS) -framework UserNotifications
+uinotify: uinotify.m strtonum.c uinotify.plist
+	$(CC) -fobjc-arc -O3 $(CFLAGS) uinotify.m strtonum.c -o uinotify $(LDFLAGS) -framework UserNotifications
 
 deviceinfo: deviceinfo.c ecidecid.m uiduid.m serial.m locale.m cfversion.c
 	$(CC) -fobjc-arc -O3 $(CFLAGS) $^ -o $@ $(LDFLAGS) -framework CoreFoundation -lMobileGestalt
