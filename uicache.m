@@ -89,7 +89,6 @@ void help() {
 		"Update iOS registered applications and optionally restart SpringBoard\n\n"
 
 		"  -a, --all                Update all system and internal applications\n"
-		"                              (replicates the old uicache behavior)\n"
 		"  -f, --force              Force -a to reregister all Applications\n"
 		"                              and modify App Store apps\n"
 		"  -p, --path <path>        Update application bundle at the specified path\n"
