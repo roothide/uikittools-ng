@@ -8,12 +8,14 @@
 // clang-format off
 void usage() {
 	printf(
-		"Usage: %s [-b body] [-p primary] [-s second] [-t third] [--timeout number] title\n"
+		"Usage: %s [-b body] [-p primary] [--priority 0-3] [-s second] [-t third] [--timeout number] title\n"
 		"Copyright (C) 2021, Procursus Team. All Rights Reserved.\n\n"
 		"Display an alert\n\n"
 
 		"  -b, --body <text>        Text for alert body\n"
 		"  -p, --primary <text>     Default button text instead of \"OK\"\n"
+		"      --priority 0-3       Alert priority\n"
+		"                           This will change the icon on macOS\n"
 		"  -s, --secondary <text>   Second button text\n"
 		"  -t, --tertiary <text>    Third button text\n"
 		"      --timeout <num>      Number of seconds to wait before exiting\n\n"
@@ -28,9 +30,15 @@ void usage() {
 }
 // clang-format on
 
+enum {
+	OPT_PRIORITY,
+	OPT_TIMEOUT
+};
+
 int main(int argc, char **argv) {
 	CFOptionFlags cfRes;
 	double timeout = 0;
+	int priority = kCFUserNotificationNoteAlertLevel;
 	char *message = NULL;
 	char *defaultButton = NULL;
 	char *alternativeButton = NULL;
@@ -42,9 +50,10 @@ int main(int argc, char **argv) {
 	static struct option longopts[] = {
 		{"body", required_argument, NULL, 'b'},
 		{"primary", required_argument, NULL, 'p'},
+		{"priority", required_argument, NULL, OPT_PRIORITY},
 		{"secondary", required_argument, NULL, 's'},
 		{"tertiary", required_argument, NULL, 't'},
-		{"timeout", required_argument, NULL, 0},
+		{"timeout", required_argument, NULL, OPT_TIMEOUT},
 		{NULL, 0, NULL, 0}};
 // clang-format on
 
@@ -62,10 +71,28 @@ int main(int argc, char **argv) {
 			case 't':
 				otherButton = optarg;
 				break;
-			case 0:
+			case OPT_PRIORITY:
+				switch (strtonum(optarg, 0, 3, &errstr)) {
+					case 0:
+						if (errstr != NULL)
+							errx(1, "the priority is %s: %s", errstr, optarg);
+						priority = kCFUserNotificationPlainAlertLevel;
+						break;
+					case 1:
+						priority = kCFUserNotificationNoteAlertLevel;
+						break;
+					case 2:
+						priority = kCFUserNotificationCautionAlertLevel;
+						break;
+					case 3:
+						priority = kCFUserNotificationStopAlertLevel;
+						break;
+				}
+				break;
+			case OPT_TIMEOUT:
 				timeout = strtonum(optarg, 0, INT_MAX, &errstr);
 				if (errstr != NULL)
-					errx(1, "the timout is %s: %s", errstr, optarg);
+					errx(1, "the timeout is %s: %s", errstr, optarg);
 				break;
 			default:
 				usage();
@@ -79,7 +106,7 @@ int main(int argc, char **argv) {
 	if (argv[0] == NULL) usage();
 
 	CFUserNotificationDisplayAlert(
-		timeout, kCFUserNotificationNoteAlertLevel, NULL, NULL, NULL,
+		timeout, priority, NULL, NULL, NULL,
 		(__bridge CFStringRef)[NSString stringWithUTF8String:argv[0]],
 		message == NULL
 			? NULL
