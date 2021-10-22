@@ -10,7 +10,6 @@ ALL := gssc ldrestart sbdidlaunch sbreload uicache uiopen deviceinfo uialert uis
 MAN := gssc.1 ldrestart.1 sbdidlaunch.1 sbreload.1 uicache.1 uiopen.1 deviceinfo.1 uialert.1 uishoot.1 uinotify.1 uisave.1
 ALLMAC := gssc deviceinfo uialert
 MANMAC := gssc.1 deviceinfo.1 uialert.1
-
 APP_PATH ?= $(MEMO_PREFIX)/Applications
 
 sign: $(ALL)
@@ -28,7 +27,7 @@ all: sign
 
 gssc: gssc.m gssc.plist
 	$(CC) -fobjc-arc -O3 $(CFLAGS) gssc.m -o gssc $(LDFLAGS) -framework Foundation -lMobileGestalt
-	
+
 ldrestart: ldrestart.c ent.plist
 	$(CC) -O3 $(CFLAGS) ldrestart.c -o ldrestart $(LDFLAGS)
 
@@ -59,20 +58,28 @@ uisave: uisave.m uisave.plist
 deviceinfo: deviceinfo.c ecidecid.m uiduid.m serial.m locale.m cfversion.c
 	$(CC) -fobjc-arc -O3 $(CFLAGS) $^ -o $@ $(LDFLAGS) -framework CoreFoundation -lMobileGestalt
 
-install: sign $(ALL) $(MAN)
+install: sign $(ALL)
 	$(INSTALL) -d $(DESTDIR)$(PREFIX)/bin/
 	$(INSTALL) -s -m755 $(ALL) $(DESTDIR)$(PREFIX)/bin/
 	ln -sf deviceinfo $(DESTDIR)$(PREFIX)/bin/cfversion
 	ln -sf deviceinfo $(DESTDIR)$(PREFIX)/bin/uiduid
 	ln -sf deviceinfo $(DESTDIR)$(PREFIX)/bin/ecidecid
 	$(INSTALL) -d $(DESTDIR)$(PREFIX)/share/man/man1/
-	$(INSTALL) -m644 $(MAN) $(DESTDIR)$(PREFIX)/share/man/man1/
+	$(INSTALL) -d $(DESTDIR)$(PREFIX)/share/man/zh_TW/man1/
+	$(INSTALL) -d $(DESTDIR)$(PREFIX)/share/man/zh_CN/man1/
+	$(INSTALL) -m644 $(patsubst %,man/%,$(MAN)) $(DESTDIR)$(PREFIX)/share/man/man1/
+	$(INSTALL) -m644 $(patsubst %,man/zh_TW/%,$(MAN)) $(DESTDIR)$(PREFIX)/share/man/zh_TW/man1/
+	$(INSTALL) -m644 $(patsubst %,man/zh_CN/%,$(MAN)) $(DESTDIR)$(PREFIX)/share/man/zh_CN/man1/
 
-install-macosx: $(ALLMAC) $(MANMAC)
+install-macosx: $(ALLMAC)
 	$(INSTALL) -d $(DESTDIR)$(PREFIX)/bin/
 	$(INSTALL) -s -m755 $(ALLMAC) $(DESTDIR)$(PREFIX)/bin/
 	$(INSTALL) -d $(DESTDIR)$(PREFIX)/share/man/man1/
-	$(INSTALL) -m644 $(MANMAC) $(DESTDIR)$(PREFIX)/share/man/man1/
+	$(INSTALL) -d $(DESTDIR)$(PREFIX)/share/man/zh_TW/man1/
+	$(INSTALL) -d $(DESTDIR)$(PREFIX)/share/man/zh_CN/man1/
+	$(INSTALL) -m644 $(patsubst %,man/%,$(MANMAC)) $(DESTDIR)$(PREFIX)/share/man/man1/
+	$(INSTALL) -m644 $(patsubst %,man/zh_TW/%,$(MANMAC)) $(DESTDIR)$(PREFIX)/share/man/zh_TW/man1/
+	$(INSTALL) -m644 $(patsubst %,man/zh_CN/%,$(MANMAC)) $(DESTDIR)$(PREFIX)/share/man/zh_CN/man1/
 
 clean:
 	rm -rf $(ALL) $(ALLMAC) *.dSYM
