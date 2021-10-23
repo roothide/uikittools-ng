@@ -14,7 +14,7 @@ APP_PATH ?= $(MEMO_PREFIX)/Applications
 
 sign: $(ALL)
 	$(STRIP) $(ALL)
-	$(LDID) -Sent.plist ldrestart sbdidlaunch deviceinfo
+	$(LDID) -Sent.plist ldrestart sbdidlaunch deviceinfo uialert
 	$(LDID) -Sgssc.plist gssc
 	$(LDID) -Ssbreload.plist sbreload
 	$(LDID) -Suicache.plist uicache
