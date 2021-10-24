@@ -21,6 +21,7 @@ APP_PATH ?= $(MEMO_PREFIX)/Applications
 
 sign: $(ALL)
 	$(STRIP) $(ALL)
+ifneq (,$(findstring macosx,$(CC) $(CFLAGS)))
 	for tool in $(ALL); do \
 		if [ -f $$tool.plist ]; then \
 			$(LDID) -S$${tool}.plist $$tool; \
@@ -28,6 +29,7 @@ sign: $(ALL)
 			$(LDID) -Sent.plist $$tool; \
 		fi; \
 	done
+endif
 
 all: sign
 
@@ -83,4 +85,4 @@ clean:
 format:
 	find . -type f -name '*.[cm]' -exec clang-format -i {} \;
 
-.PHONY: all clean install install-macosx sign format
+.PHONY: all clean install sign format
