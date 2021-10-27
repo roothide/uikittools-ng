@@ -9,9 +9,9 @@ INSTALL ?= install
 ifneq (,$(findstring bridgeos,$(CC) $(CFLAGS)))
 ALL := gssc ldrestart
 else ifneq (,$(findstring iphoneos,$(CC) $(CFLAGS)))
-ALL := gssc ldrestart sbdidlaunch sbreload uicache uiopen deviceinfo uialert uishoot uinotify uisave
+ALL := gssc ldrestart sbdidlaunch sbreload uicache uiopen deviceinfo uialert uishoot uinotify uisave lsrebuild
 else ifneq (,$(findstring appletvos,$(CC) $(CFLAGS)))
-ALL := gssc ldrestart sbreload uicache uiopen deviceinfo uialert uishoot
+ALL := gssc ldrestart sbreload uicache uiopen deviceinfo uialert uishoot lsrebuild
 else ifneq (,$(findstring macosx,$(CC) $(CFLAGS)))
 ALL := gssc deviceinfo uialert
 endif
@@ -63,6 +63,9 @@ uinotify: uinotify.m strtonum.c uinotify.plist
 uisave: uisave.m uisave.plist
 	$(CC) -fobjc-arc -O3 $(CFLAGS) $< -o $@ $(LDFLAGS) -framework Foundation -framework Photos -framework UIKit
 
+lsrebuild: lsrebuild.m lsrebuild.plist
+	$(CC) -fobjc-arc -O3 $(CFLAGS) $< -o $@ $(LDFLAGS) -framework Foundation -framework MobileCoreServices
+
 deviceinfo: deviceinfo.c ecidecid.m uiduid.m serial.m locale.m cfversion.c
 	$(CC) -fobjc-arc -O3 $(CFLAGS) $^ -o $@ $(LDFLAGS) -framework CoreFoundation -lMobileGestalt
 
@@ -76,8 +79,8 @@ install: sign $(ALL)
 	$(INSTALL) -d $(DESTDIR)$(PREFIX)/share/man/zh_TW/man1/
 	$(INSTALL) -d $(DESTDIR)$(PREFIX)/share/man/zh_CN/man1/
 	$(INSTALL) -m644 $(patsubst %,man/%,$(MAN)) $(DESTDIR)$(PREFIX)/share/man/man1/
-	$(INSTALL) -m644 $(patsubst %,man/zh_TW/%,$(MAN)) $(DESTDIR)$(PREFIX)/share/man/zh_TW/man1/
-	$(INSTALL) -m644 $(patsubst %,man/zh_CN/%,$(MAN)) $(DESTDIR)$(PREFIX)/share/man/zh_CN/man1/
+	-$(INSTALL) -m644 $(patsubst %,man/zh_TW/%,$(MAN)) $(DESTDIR)$(PREFIX)/share/man/zh_TW/man1/
+	-$(INSTALL) -m644 $(patsubst %,man/zh_CN/%,$(MAN)) $(DESTDIR)$(PREFIX)/share/man/zh_CN/man1/
 
 clean:
 	rm -rf $(ALL) *.dSYM
