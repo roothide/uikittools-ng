@@ -106,6 +106,7 @@ endif
 
 clean:
 	rm -rf $(ALL) *.dSYM
+	$(MAKE) -C po clean
 
 format:
 	find . -type f -name '*.[cm]' -exec clang-format -i {} \;
