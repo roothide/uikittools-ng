@@ -12,10 +12,19 @@ else ifneq (,$(findstring iphoneos,$(CC) $(CFLAGS)))
 ALL := gssc ldrestart sbdidlaunch sbreload uicache uiopen deviceinfo uialert uishoot uinotify uisave lsrebuild
 else ifneq (,$(findstring appletvos,$(CC) $(CFLAGS)))
 ALL := gssc ldrestart sbreload uicache uiopen deviceinfo uialert uishoot lsrebuild
-else ifneq (,$(findstring macosx,$(CC) $(CFLAGS)))
+else
 ALL := gssc deviceinfo uialert
 endif
 MAN := $(patsubst %,%.1,$(ALL))
+
+ifeq ($(NO_NLS),1)
+CFLAGS  += -DNO_NLS
+else
+ifneq ($(LOCALEDIR),)
+CFLAGS  += -DLOCALEDIR=\"$(LOCALEDIR)\"
+endif
+LDFLAGS += -lintl
+endif
 
 APP_PATH ?= $(MEMO_PREFIX)/Applications
 

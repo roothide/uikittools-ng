@@ -2,6 +2,18 @@
 #import <MobileCoreServices/MobileCoreServices.h>
 #include <err.h>
 
+#ifndef NO_NLS
+#	include <libintl.h>
+#	define _(a) gettext(a)
+#	define PACKAGE "uikittools-ng"
+#else
+#	define _(a) a
+#endif
+
+#ifndef LOCALEDIR
+#	define LOCALEDIR "/usr/share/locale"
+#endif
+
 @interface LSResourceProxy : NSObject
 @property(assign) NSString* localizedName;
 - (NSData*)iconDataForVariant:(NSInteger)format;
@@ -34,18 +46,24 @@
 @end
 
 int main(int argc, char** argv) {
+#ifndef NO_NLS
+	setlocale(LC_ALL, "");
+	bindtextdomain(PACKAGE, LOCALEDIR);
+	textdomain(PACKAGE);
+#endif
+
 	@autoreleasepool {
 		LSApplicationWorkspace* workspace = [LSApplicationWorkspace defaultWorkspace];
 		if (![workspace
 				respondsToSelector:@selector
 				(_LSPrivateRebuildApplicationDatabasesForSystemApps:internal:user:)]) {
-			errx(1, "Missing necessary method");
+			errx(1, _("missing necessary method"));
 		}
 		if (![workspace
 				_LSPrivateRebuildApplicationDatabasesForSystemApps:YES
 														  internal:YES
 															  user:YES]) {
-			errx(1, "RebuildApplicationDatabases failed");
+			errx(1, _("RebuildApplicationDatabases failed"));
 		}
 		return 0;
 	}
