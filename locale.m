@@ -17,7 +17,7 @@ void help() {
 Print the current locale\n\n"));
 
 	printf(_("-h --help      Give this help list.\n\
- -i --identifier Print the locale identifer (default)\n\
+ -i --identifier Print the locale identifier (default)\n\
  -l --language   Print the language code\n\
  -c --country    Print the country code\n\
  -v --variant    Print the variant code\n\n\
