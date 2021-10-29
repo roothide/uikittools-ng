@@ -13,3 +13,4 @@ lsrebuild
 compile_commands.json
 .cache
 include/
+*.mo

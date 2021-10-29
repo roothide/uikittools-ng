@@ -4,7 +4,6 @@ LDFLAGS ?=
 
 STRIP   ?= strip
 LDID    ?= ldid
-INSTALL ?= install
 
 ifneq (,$(findstring bridgeos,$(CC) $(CFLAGS)))
 ALL := gssc ldrestart
@@ -16,6 +15,8 @@ else
 ALL := gssc deviceinfo uialert
 endif
 MAN := $(patsubst %,%.1,$(ALL))
+
+MANLANGS := zh_CN zh_TW
 
 ifeq ($(NO_NLS),1)
 CFLAGS  += -DNO_NLS
@@ -40,7 +41,7 @@ ifneq (,$(findstring macosx,$(CC) $(CFLAGS)))
 	done
 endif
 
-all: sign
+all: sign po
 
 gssc: gssc.m gssc.plist
 	$(CC) -fobjc-arc -O3 $(CFLAGS) $< -o $@ $(LDFLAGS) -framework Foundation -lMobileGestalt
@@ -78,18 +79,24 @@ lsrebuild: lsrebuild.m lsrebuild.plist
 deviceinfo: deviceinfo.c ecidecid.m uiduid.m serial.m locale.m cfversion.c
 	$(CC) -fobjc-arc -O3 $(CFLAGS) $^ -o $@ $(LDFLAGS) -framework CoreFoundation -lMobileGestalt
 
-install: sign $(ALL)
-	$(INSTALL) -d $(DESTDIR)$(PREFIX)/bin/
-	$(INSTALL) -m755 $(ALL) $(DESTDIR)$(PREFIX)/bin/
+install: $(ALL) sign install-po
+	install -d $(DESTDIR)$(PREFIX)/bin/
+	install -m755 $(ALL) $(DESTDIR)$(PREFIX)/bin/
 	ln -sf deviceinfo $(DESTDIR)$(PREFIX)/bin/cfversion
 	ln -sf deviceinfo $(DESTDIR)$(PREFIX)/bin/uiduid
 	ln -sf deviceinfo $(DESTDIR)$(PREFIX)/bin/ecidecid
-	$(INSTALL) -d $(DESTDIR)$(PREFIX)/share/man/man1/
-	$(INSTALL) -d $(DESTDIR)$(PREFIX)/share/man/zh_TW/man1/
-	$(INSTALL) -d $(DESTDIR)$(PREFIX)/share/man/zh_CN/man1/
-	$(INSTALL) -m644 $(patsubst %,man/%,$(MAN)) $(DESTDIR)$(PREFIX)/share/man/man1/
-	-$(INSTALL) -m644 $(patsubst %,man/zh_TW/%,$(MAN)) $(DESTDIR)$(PREFIX)/share/man/zh_TW/man1/
-	-$(INSTALL) -m644 $(patsubst %,man/zh_CN/%,$(MAN)) $(DESTDIR)$(PREFIX)/share/man/zh_CN/man1/
+	install -d $(DESTDIR)$(PREFIX)/share/man/man1/
+	install -m644 $(patsubst %,man/%,$(MAN)) $(DESTDIR)$(PREFIX)/share/man/man1/
+	for lang in $(MANLANGS); do \
+		install -d $(DESTDIR)$(PREFIX)/share/man/$$lang/man1/; \
+		install -m644 $(patsubst %,man/$$lang/%,$(MAN)) $(DESTDIR)$(PREFIX)/share/man/$$lang/man1/ || true; \
+	done
+
+po:
+	$(MAKE) -C po
+
+install-po: po
+	$(MAKE) -C po install LOCALEDIR="$(LOCALEDIR)"
 
 clean:
 	rm -rf $(ALL) *.dSYM
@@ -97,4 +104,4 @@ clean:
 format:
 	find . -type f -name '*.[cm]' -exec clang-format -i {} \;
 
-.PHONY: all clean install sign format
+.PHONY: all clean install sign format po install-po
