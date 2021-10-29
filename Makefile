@@ -27,6 +27,8 @@ else
 CFLAGS  += -DNO_NLS
 endif
 
+CFLAGS  += -Wno-unguarded-availability-new
+
 APP_PATH ?= $(MEMO_PREFIX)/Applications
 
 sign: $(ALL)
