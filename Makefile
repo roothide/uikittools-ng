@@ -18,13 +18,13 @@ MAN := $(patsubst %,%.1,$(ALL))
 
 MANLANGS := zh_CN zh_TW
 
-ifeq ($(NO_NLS),1)
-CFLAGS  += -DNO_NLS
-else
+ifeq ($(NLS),1)
 ifneq ($(LOCALEDIR),)
 CFLAGS  += -DLOCALEDIR=\"$(LOCALEDIR)\"
 endif
 LDFLAGS += -lintl
+else
+CFLAGS  += -DNO_NLS
 endif
 
 APP_PATH ?= $(MEMO_PREFIX)/Applications
@@ -93,10 +93,14 @@ install: $(ALL) sign install-po
 	done
 
 po:
+ifeq ($(NLS),1)
 	$(MAKE) -C po
+endif
 
 install-po: po
+ifeq ($(NLS),1)
 	$(MAKE) -C po install LOCALEDIR="$(LOCALEDIR)"
+endif
 
 clean:
 	rm -rf $(ALL) *.dSYM
