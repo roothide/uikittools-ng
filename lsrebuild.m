@@ -1,5 +1,6 @@
 #import <Foundation/Foundation.h>
 #import <MobileCoreServices/MobileCoreServices.h>
+#include <err.h>
 
 @interface LSResourceProxy : NSObject
 @property(assign) NSString* localizedName;
@@ -38,15 +39,13 @@ int main(int argc, char** argv) {
 		if (![workspace
 				respondsToSelector:@selector
 				(_LSPrivateRebuildApplicationDatabasesForSystemApps:internal:user:)]) {
-			fputs("Not supported\n", stderr);
-			return -1;
+			errx(1, "Missing necessary method");
 		}
 		if (![workspace
 				_LSPrivateRebuildApplicationDatabasesForSystemApps:YES
 														  internal:YES
 															  user:YES]) {
-			fputs("RebuildApplicationDatabases\n", stderr);
-			return 1;
+			errx(1, "RebuildApplicationDatabases failed");
 		}
 		return 0;
 	}
