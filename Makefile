@@ -33,7 +33,7 @@ APP_PATH ?= $(MEMO_PREFIX)/Applications
 
 sign: $(ALL)
 	$(STRIP) $(ALL)
-ifneq (,$(findstring macosx,$(CC) $(CFLAGS)))
+ifeq (,$(findstring macosx,$(CC) $(CFLAGS)))
 	for tool in $(ALL); do \
 		if [ -f $$tool.plist ]; then \
 			$(LDID) -S$${tool}.plist $$tool; \
