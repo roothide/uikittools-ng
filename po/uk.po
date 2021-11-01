@@ -5,53 +5,54 @@ msgstr ""
 "POT-Creation-Date: 2021-10-30 17:33+0200\n"
 "PO-Revision-Date: 2021-11-01 02:48\n"
 "Last-Translator: \n"
-"Language-Team: Swedish\n"
-"Language: sv_SE\n"
+"Language-Team: Ukrainian\n"
+"Language: uk_UA\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Plural-Forms: nplurals=4; plural=((n%10==1 && n%100!=11) ? 0 : ((n%10 >= 2 && n%10 <=4 && (n%100 < 12 || n%100 > 14)) ? 1 : ((n%10 == 0 || (n%10 >= 5 && n%10 <=9)) || (n%100 >= 11 && n%100 <= 14)) ? 2 : 3));\n"
 "X-Crowdin-Project: uikittools-ng\n"
 "X-Crowdin-Project-ID: 482777\n"
-"X-Crowdin-Language: sv-SE\n"
+"X-Crowdin-Language: uk\n"
 "X-Crowdin-File: uikittools-ng.pot\n"
 "X-Crowdin-File-ID: 3\n"
 
 #: ../deviceinfo.c:43 ../deviceinfo.c:88
 #, c-format
 msgid "Usage: %s [cfversion | ecid | locale | serial | uniqueid] [arguments ...]\n"
-msgstr ""
+msgstr "Використання: %s [cfversion | ecid | locale | serial | uniqueid] [аргументи ...]\n"
 
 #: ../ldrestart.c:78 ../sbreload-launchd.c:78
 #, c-format
 msgid "Error stopping service:  %d - %s\n"
-msgstr ""
+msgstr "Помилка зупинки сервіс: %d - %s\n"
 
 #: ../ldrestart.c:112 ../sbreload-launchd.c:106
 #, c-format
 msgid "Error: no services returned for list\n"
-msgstr "Fel: inga tjänster returnerades för listan\n"
+msgstr "Помилка: не жодного сервіса повернуті список\n"
 
 #: ../ldrestart.c:120 ../sbreload-launchd.c:114
 #, c-format
 msgid "Error: services returned for list aren't a dictionary!\n"
-msgstr ""
+msgstr "Помилка: повернута сервіси від списку не словник-таблиця!\n"
 
 #: ../ldrestart.c:138 ../sbreload-launchd.c:136
 #, c-format
 msgid "Error:  %d - %s\n"
-msgstr ""
+msgstr "Помилка: %d - %s\n"
 
 #: ../ldrestart.c:141 ../sbreload-launchd.c:139
 #, c-format
 msgid "Unable to get launchd: %d\n"
-msgstr ""
+msgstr "Неможливо дістати launchd: %d\n"
 
 #: ../locale.m:16
 #, c-format
 msgid "Usage: deviceinfo locale [-ilcvh]\n"
 "Print the current locale\n\n"
-msgstr ""
+msgstr "Використання: deviceinfo locale [-ilcvh]\n"
+"Показати поточну локаль\n\n"
 
 #: ../locale.m:19
 #, c-format
@@ -61,22 +62,29 @@ msgid "-h --help      Give this help list.\n"
 " -c --country    Print the country code\n"
 " -v --variant    Print the variant code\n\n"
 "If multiple output formats are specified the last will be used\n"
-msgstr ""
+msgstr "-h --help       Показати цей список допомоги\n"
+"-i --identifier Показати ідентифікатор локалю (за замовчуванням)\n"
+"-l --language Показати код від мови\n"
+"-c --country   Показати код від країни\n"
+"-v --variant     Показати код від варіанта\n\n\n"
+"Якщо різні формати виходу вказанні, тільки останній формат буде використованний\n"
 
 #: ../lsrebuild.m:60
 msgid "missing necessary method"
-msgstr ""
+msgstr "нехватає важливу методу"
 
 #: ../lsrebuild.m:66
 msgid "RebuildApplicationDatabases failed"
-msgstr ""
+msgstr "RebuildApplicationDatabase (ПеребудкаПрограммноїДанноваБаза) невдачна"
 
 #: ../uialert.m:22
 #, c-format
 msgid "Usage: %s [-b body] [-p primary] [--priority 0-3] [-s second] [-t third] [--timeout number] title\n"
 "Copyright (C) 2021, Procursus Team. All Rights Reserved.\n\n"
 "Display an alert\n\n"
-msgstr ""
+msgstr "Використання: %s [-b тіло] [-p основний] [--priority 0-3] [-s середній] [-t третій] [--timeout номер тайм-аута] ім’я\n"
+"Авторські права (C) 2021, Procursus Team. Всі Права Захищені.\n\n"
+"Показати попередження\n\n"
 
 #: ../uialert.m:26
 #, c-format
@@ -87,7 +95,12 @@ msgid "  -b, --body <text>        Text for alert body\n"
 "  -s, --secondary <text>   Second button text\n"
 "  -t, --tertiary <text>    Third button text\n"
 "      --timeout <num>      Number of seconds to wait before exiting\n\n"
-msgstr ""
+msgstr "  -b, --body <text>        Текст для тіла попередження\n"
+"  -p, --primary <text>     Текст основної кнопки\n"
+"  --priority 0-3       Пріорітет попередження, це помінняйе ікону на macOS\n"
+"  -s, --secondary <text>   Текст другої кнопки\n"
+"  -t, --tertiary <text>    Tекст третьої кнопки\n"
+"      --timeout <num>      Кількість секунд на тайм-аут перед программний вихд\n\n"
 
 #: ../uialert.m:34
 #, c-format
@@ -97,44 +110,50 @@ msgid "Output:\n"
 "  2 - tertiary button\n"
 "  3 - timeout/cancel\n\n"
 "Contact the Procursus Team for support.\n"
-msgstr ""
+msgstr "Вихід:\n"
+" 0 - основна кнопка\n"
+" 1 - середня кнопка\n"
+" 2 - третя кнопка\n"
+" 3 - тайм-аут/скасувати\n\n"
+"З контактуйте Procursus Team для допомоги.\n"
 
 #: ../uialert.m:95
 #, c-format
 msgid "the priority is %s: %s"
-msgstr "prioriteten är %s: %s"
+msgstr "пріоритет %s: %s"
 
 #: ../uialert.m:112
 #, c-format
 msgid "the timeout is %s: %s"
-msgstr ""
+msgstr "тайм-аут %s: %s"
 
 #: ../uicache.m:104
 #, c-format
 msgid "Usage: %s [-afhlr] [-i id] [-p path] [-u path]\n"
 "Modified work Copyright (C) 2021, Procursus Team. All Rights Reserved.\n\n"
-msgstr ""
+msgstr "Використання: %s [-afhlr] [-id ідентифікація] [-p шлях]\n"
+"Змінена робота Авторське право (C) 2021, Procursus Team. Всі Права Захищені.\n\n"
 
 #: ../uicache.m:106
 #, c-format
 msgid "Update iOS registered applications and optionally restart SpringBoard\n\n"
-msgstr ""
+msgstr "Оновити зареєстровані iOS програми та перегрузити SpringBoard\n\n"
 
 #: ../uicache.m:108
 #, c-format
 msgid "  -a, --all                Update all system and internal applications\n"
-msgstr "  -a, --all Uppdatera alla system och interna applikationer\n"
+msgstr "  -a, --all              Оновити всі системні та внутрішні програми\n"
 
 #: ../uicache.m:109
 #, c-format
 msgid "  -f, --force              Force -a to reregister all Applications\n"
 "                              and modify App Store apps\n"
-msgstr ""
+msgstr "  -f, --force  Заставити -a заригіструвати всі програми і змінити програми від App Store\n"
 
 #: ../uicache.m:111
 #, c-format
 msgid "  -p, --path <path>        Update application bundle at the specified path\n"
-msgstr ""
+msgstr "  -p, --path <path>  Обновити пакет програмів в вказунуму шляху\n"
 
 #: ../uicache.m:112
 #, c-format
@@ -202,11 +221,11 @@ msgstr ""
 
 #: ../uicache.m:253
 msgid "true"
-msgstr "sant"
+msgstr ""
 
 #: ../uicache.m:253
 msgid "false"
-msgstr "falskt"
+msgstr ""
 
 #: ../uicache.m:256 ../uicache.m:264
 #, c-format
@@ -389,12 +408,12 @@ msgstr ""
 #: ../uisave.m:57
 #, c-format
 msgid "No file at path: %s\n"
-msgstr "Ingen fil vid sökvägen: %s\n"
+msgstr ""
 
 #: ../uisave.m:73
 #, c-format
 msgid "No supported image or video format at: %s\n"
-msgstr "Inget stöd för bild eller videoformat på: %s\n"
+msgstr ""
 
 #: ../uisave.m:91
 #, c-format
@@ -429,15 +448,15 @@ msgstr ""
 #: ../uishoot.m:123
 #, c-format
 msgid "Could not get image data to write to file!\n"
-msgstr "Kunde inte hämta bilddata att skriva till filen!\n"
+msgstr ""
 
 #: ../uishoot.m:132
 #, c-format
 msgid "Could not write image to %s: %s\n"
-msgstr "Kunde inte skriva bilden till %s: %s\n"
+msgstr ""
 
 #: ../uishoot.m:148
 #, c-format
 msgid "Could not save screenshot to Photos: %s\n"
-msgstr "Kunde inte spara skärmdumpen till bilder: %s\n"
+msgstr ""
 

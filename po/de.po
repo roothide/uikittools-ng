@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: uikittools-ng\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-10-29 19:44-0400\n"
-"PO-Revision-Date: 2021-10-29 23:45\n"
+"POT-Creation-Date: 2021-10-30 17:33+0200\n"
+"PO-Revision-Date: 2021-11-01 02:48\n"
 "Last-Translator: \n"
 "Language-Team: German\n"
 "Language: de_DE\n"
@@ -30,22 +30,22 @@ msgstr "Fehler beim Stoppen des Dienstes:  %d - %s\n"
 #: ../ldrestart.c:112 ../sbreload-launchd.c:106
 #, c-format
 msgid "Error: no services returned for list\n"
-msgstr ""
+msgstr "Fehler: Keine Dienste für Liste\n"
 
 #: ../ldrestart.c:120 ../sbreload-launchd.c:114
 #, c-format
 msgid "Error: services returned for list aren't a dictionary!\n"
-msgstr ""
+msgstr "Fehler: Dienste für Liste sind kein Wörterbuch!\n"
 
 #: ../ldrestart.c:138 ../sbreload-launchd.c:136
 #, c-format
 msgid "Error:  %d - %s\n"
-msgstr ""
+msgstr "Fehler:  %d - %s\n"
 
 #: ../ldrestart.c:141 ../sbreload-launchd.c:139
 #, c-format
 msgid "Unable to get launchd: %d\n"
-msgstr ""
+msgstr "Start fehlgeschlagen: %d\n"
 
 #: ../locale.m:16
 #, c-format
@@ -226,6 +226,95 @@ msgstr ""
 #: ../uicache.m:378
 #, c-format
 msgid "unregistering %s\n"
+msgstr ""
+
+#: ../uidisplay.m:77
+#, c-format
+msgid "Usage: %s [-a state] [-b [+|-]num] [-d state] [-h] [-i [key]] [-n state] [-t state] [-w state]\n"
+msgstr ""
+
+#: ../uidisplay.m:88
+#, c-format
+msgid "Invalid %s value: '%s', permitted values: 0, off, 1, on\n"
+msgstr ""
+
+#: ../uidisplay.m:96
+msgid "on"
+msgstr ""
+
+#: ../uidisplay.m:98
+msgid "off"
+msgstr ""
+
+#: ../uidisplay.m:100
+msgid "not supported"
+msgstr ""
+
+#: ../uidisplay.m:146
+msgid "Dark Mode is only supported on iOS 13 and higher.\n"
+msgstr ""
+
+#: ../uidisplay.m:179
+msgid "Night Shift is not supported on this device.\n"
+msgstr ""
+
+#: ../uidisplay.m:215
+msgid "True Tone is not supported on this device.\n"
+msgstr ""
+
+#: ../uidisplay.m:256
+#, c-format
+msgid "Invalid brightness value: %s\n"
+msgstr ""
+
+#: ../uidisplay.m:270
+#, c-format
+msgid "Invalid brightness value: %s, %s\n"
+msgstr ""
+
+#: ../uidisplay.m:293
+#, c-format
+msgid "Unable to increase the brightness by %d, %.6g.\n"
+msgstr ""
+
+#: ../uidisplay.m:305
+#, c-format
+msgid "Unable to decrease the brightness by %d, %.6g.\n"
+msgstr ""
+
+#: ../uidisplay.m:390
+#, c-format
+msgid "Unknown information type: %s\n"
+msgstr ""
+
+#: ../uidisplay.m:393
+#, c-format
+msgid "Brightness: %.6g\n"
+msgstr ""
+
+#: ../uidisplay.m:394
+#, c-format
+msgid "Auto-Brightness: %s\n"
+msgstr ""
+
+#: ../uidisplay.m:395
+#, c-format
+msgid "Dark Mode: %s\n"
+msgstr ""
+
+#: ../uidisplay.m:396
+#, c-format
+msgid "Night Shift: %s\n"
+msgstr ""
+
+#: ../uidisplay.m:397
+#, c-format
+msgid "True Tone: %s\n"
+msgstr ""
+
+#: ../uidisplay.m:398
+#, c-format
+msgid "Reduce White Point: %s\n"
 msgstr ""
 
 #: ../uinotify.m:23

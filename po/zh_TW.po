@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: uikittools-ng\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-10-29 19:44-0400\n"
-"PO-Revision-Date: 2021-10-29 23:45\n"
+"POT-Creation-Date: 2021-10-30 17:33+0200\n"
+"PO-Revision-Date: 2021-11-01 02:48\n"
 "Last-Translator: \n"
 "Language-Team: Chinese Traditional\n"
 "Language: zh_TW\n"
@@ -62,7 +62,12 @@ msgid "-h --help      Give this help list.\n"
 " -c --country    Print the country code\n"
 " -v --variant    Print the variant code\n\n"
 "If multiple output formats are specified the last will be used\n"
-msgstr ""
+msgstr "-h --help      印出這幫助列表\n"
+" -i --identifier 印出地區設定識別碼（預設）\n"
+" -l --language   印出語言編號\n"
+" -c --country    印出國家編號\n"
+" -v --variant    印出變種編號\n\n"
+"如指定多於一種輸出格式，那麼最後被指定的格式 將會被使用。\n"
 
 #: ../lsrebuild.m:60
 msgid "missing necessary method"
@@ -90,7 +95,13 @@ msgid "  -b, --body <text>        Text for alert body\n"
 "  -s, --secondary <text>   Second button text\n"
 "  -t, --tertiary <text>    Third button text\n"
 "      --timeout <num>      Number of seconds to wait before exiting\n\n"
-msgstr ""
+msgstr "  -b, --body <文字>         提示正文的文字\n"
+"  -p, --primary <文字>     預設按鈕的文字，而不是「OK」\n"
+"      --priority 0-3       提示的優先度\n"
+"                           這會更變在macOS上提示的圖標\n"
+"  -s, --secondary <文字>   第二個按鈕的文字\n"
+"  -t, --tertiary <文字>    第三個按鈕的文字\n"
+"      --timeout <數字>      在退出之前等待的秒數\n\n"
 
 #: ../uialert.m:34
 #, c-format
@@ -100,95 +111,103 @@ msgid "Output:\n"
 "  2 - tertiary button\n"
 "  3 - timeout/cancel\n\n"
 "Contact the Procursus Team for support.\n"
-msgstr ""
+msgstr "輸出\n"
+"  0 - 第一個按鈕\n"
+"  1 - 第二個按鈕\n"
+"  2 - 第三個按鈕\n"
+"  3 - 逾時或取消\n\n"
+"請聯繫Procursus團隊以取得支援。\n"
 
 #: ../uialert.m:95
 #, c-format
 msgid "the priority is %s: %s"
-msgstr ""
+msgstr "優先度為%s： %s"
 
 #: ../uialert.m:112
 #, c-format
 msgid "the timeout is %s: %s"
-msgstr ""
+msgstr "逾時時間為%s:%s"
 
 #: ../uicache.m:104
 #, c-format
 msgid "Usage: %s [-afhlr] [-i id] [-p path] [-u path]\n"
 "Modified work Copyright (C) 2021, Procursus Team. All Rights Reserved.\n\n"
-msgstr ""
+msgstr "用法： %s [-afhlr] [-i id] [-p path] [-u path]\n"
+"修改過的部分 版權所有 (C) 2021, Procursus Team. 保留所有權利。\n\n"
 
 #: ../uicache.m:106
 #, c-format
 msgid "Update iOS registered applications and optionally restart SpringBoard\n\n"
-msgstr ""
+msgstr "更新iOS已註冊的應用程式和可選地重新啟動主畫面。\n\n"
 
 #: ../uicache.m:108
 #, c-format
 msgid "  -a, --all                Update all system and internal applications\n"
-msgstr ""
+msgstr "  -a, --all                更新所有系統和內部應用程式\n"
 
 #: ../uicache.m:109
 #, c-format
 msgid "  -f, --force              Force -a to reregister all Applications\n"
 "                              and modify App Store apps\n"
-msgstr ""
+msgstr "  -f, --force             強制-a重新註冊所有應用程式\n"
+"                              和更改App Store應用程式\n"
 
 #: ../uicache.m:111
 #, c-format
 msgid "  -p, --path <path>        Update application bundle at the specified path\n"
-msgstr ""
+msgstr "  -p, --path <路徑>        更新位於指定路段的應用程式封包\n"
 
 #: ../uicache.m:112
 #, c-format
 msgid "  -u, --unregister <path>  Unregister application bundle at the specified path\n"
-msgstr ""
+msgstr "  -u, --unregister <路徑>  取消註冊位於指定的路徑的應用程式封包\n"
 
 #: ../uicache.m:113
 #, c-format
 msgid "  -r, --respring           Restart SpringBoard and backboardd after\n"
 "                              updating applications\n"
-msgstr ""
+msgstr "  -r, --respring           在更新應用程式後重啟主畫面\n"
+"                              和backboardd\n"
 
 #: ../uicache.m:115
 #, c-format
 msgid "  -l, --list               List the bundle ids of installed apps\n"
-msgstr ""
+msgstr "  -l, --list               列出已安裝應用程式的封包識別碼\n"
 
 #: ../uicache.m:116
 #, c-format
 msgid "  -i, --info <bundleid>    Give information about given bundle id\n"
-msgstr ""
+msgstr "  -i, --info <封包識別碼>    印出指定封包識別碼應用程式的資訊\n"
 
 #: ../uicache.m:117
 #, c-format
 msgid "  -h, --help               Give this help list.\n\n"
-msgstr ""
+msgstr "  -h, --help               印出這個幫助。\n\n"
 
 #: ../uicache.m:119 ../uisave.m:27
 #, c-format
 msgid "Contact the Procursus Team for support.\n"
-msgstr ""
+msgstr "聯絡Procursus團隊以取得支援。\n"
 
 #: ../uicache.m:141
 #, c-format
 msgid "uicache does not support App Store apps.\n"
-msgstr ""
+msgstr "uicache不支援App Store應用程式\n"
 
 #: ../uicache.m:143
 #, c-format
 msgid "Continuing anyway...\n"
-msgstr ""
+msgstr "強行繼續中......\n"
 
 #: ../uicache.m:213
 #, c-format
 msgid "Error: Unable to register %s\n"
-msgstr ""
+msgstr "錯誤：無法注冊%s\n"
 
 #: ../uicache.m:217
 #, c-format
 msgid "Error: Unable to unregister %s\n"
-msgstr ""
+msgstr "錯誤：無法注冊%s\n"
 
 #: ../uicache.m:237
 #, c-format
@@ -201,34 +220,130 @@ msgid "Name: %s\n"
 "TeamID: %s\n"
 "Type: %s\n"
 "Removeable: %s\n"
-msgstr ""
+msgstr "名稱：%s\n"
+"封包識別碼：%s\n"
+"可執行檔名稱：%s\n"
+"路徑：%s\n"
+"容器路徑：%s\n"
+"供應商名稱：%s\n"
+"團隊識別碼：%s\n"
+"可移除：%s\n"
 
 #: ../uicache.m:253
 msgid "true"
-msgstr ""
+msgstr "是"
 
 #: ../uicache.m:253
 msgid "false"
-msgstr ""
+msgstr "否"
 
 #: ../uicache.m:256 ../uicache.m:264
 #, c-format
 msgid "URLScheme: %s\n"
-msgstr ""
+msgstr "網址協定：%s\n"
 
 #: ../uicache.m:269
 #, c-format
 msgid "%s is an invalid bundle id\n"
-msgstr ""
+msgstr "%s不是一個有效的封包識別碼\n"
 
 #: ../uicache.m:373
 #, c-format
 msgid "registering %s\n"
-msgstr ""
+msgstr "註冊%s中\n"
 
 #: ../uicache.m:378
 #, c-format
 msgid "unregistering %s\n"
+msgstr ""
+
+#: ../uidisplay.m:77
+#, c-format
+msgid "Usage: %s [-a state] [-b [+|-]num] [-d state] [-h] [-i [key]] [-n state] [-t state] [-w state]\n"
+msgstr ""
+
+#: ../uidisplay.m:88
+#, c-format
+msgid "Invalid %s value: '%s', permitted values: 0, off, 1, on\n"
+msgstr ""
+
+#: ../uidisplay.m:96
+msgid "on"
+msgstr ""
+
+#: ../uidisplay.m:98
+msgid "off"
+msgstr ""
+
+#: ../uidisplay.m:100
+msgid "not supported"
+msgstr ""
+
+#: ../uidisplay.m:146
+msgid "Dark Mode is only supported on iOS 13 and higher.\n"
+msgstr ""
+
+#: ../uidisplay.m:179
+msgid "Night Shift is not supported on this device.\n"
+msgstr ""
+
+#: ../uidisplay.m:215
+msgid "True Tone is not supported on this device.\n"
+msgstr ""
+
+#: ../uidisplay.m:256
+#, c-format
+msgid "Invalid brightness value: %s\n"
+msgstr ""
+
+#: ../uidisplay.m:270
+#, c-format
+msgid "Invalid brightness value: %s, %s\n"
+msgstr ""
+
+#: ../uidisplay.m:293
+#, c-format
+msgid "Unable to increase the brightness by %d, %.6g.\n"
+msgstr ""
+
+#: ../uidisplay.m:305
+#, c-format
+msgid "Unable to decrease the brightness by %d, %.6g.\n"
+msgstr ""
+
+#: ../uidisplay.m:390
+#, c-format
+msgid "Unknown information type: %s\n"
+msgstr ""
+
+#: ../uidisplay.m:393
+#, c-format
+msgid "Brightness: %.6g\n"
+msgstr ""
+
+#: ../uidisplay.m:394
+#, c-format
+msgid "Auto-Brightness: %s\n"
+msgstr ""
+
+#: ../uidisplay.m:395
+#, c-format
+msgid "Dark Mode: %s\n"
+msgstr ""
+
+#: ../uidisplay.m:396
+#, c-format
+msgid "Night Shift: %s\n"
+msgstr ""
+
+#: ../uidisplay.m:397
+#, c-format
+msgid "True Tone: %s\n"
+msgstr ""
+
+#: ../uidisplay.m:398
+#, c-format
+msgid "Reduce White Point: %s\n"
 msgstr ""
 
 #: ../uinotify.m:23
