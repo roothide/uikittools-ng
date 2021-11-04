@@ -1,4 +1,5 @@
 #import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
 #import <dlfcn.h>
 #import <err.h>
 #import <getopt.h>
@@ -53,16 +54,15 @@ typedef struct {
 } Status;
 
 @interface CBBlueLightClient : NSObject
+- (void)setEnabled:(BOOL)arg1;
 + (BOOL)supportsBlueLightReduction;
-
-- (BOOL)setEnabled:(BOOL)arg1;
 - (BOOL)getBlueLightStatus:(Status *)arg1;
 @end
 
 @interface CBAdaptationClient : NSObject
-+ (BOOL)supportsAdaptation;
+- (void)setEnabled:(BOOL)arg1;
 - (BOOL)getEnabled;
-- (BOOL)setEnabled:(BOOL)arg1;
++ (BOOL)supportsAdaptation;
 @end
 
 BOOL _AXSAutoBrightnessEnabled();
@@ -363,9 +363,9 @@ int main(int argc, char *argv[]) {
 	// clang-format on
 
 	BOOL showhelp = NO;
+	UIScreen *screen = [UIScreen mainScreen];
 
 	int code = 0;
-
 	while ((code = getopt_long(argc, argv, "hi::a:b:d:n:t:w:", longOptions,
 							   NULL)) != -1) {
 		switch (code) {
@@ -386,6 +386,12 @@ int main(int argc, char *argv[]) {
 						printf("%s\n", stateAsString(getTrueTone()));
 					} else if (strcmp(optarg, "reducewhitepoint") == 0 || strcmp(optarg, "whitepoint") == 0) {
 						printf("%s\n", stateAsString(_AXSReduceWhitePointEnabled() ? sOn : sOff));
+					} else if (strcmp(optarg, "height") == 0) {
+						printf("%f\n", CGRectGetHeight([screen bounds]));
+					} else if (strcmp(optarg, "width") == 0) {
+						printf("%f\n", CGRectGetWidth([screen bounds]));
+					} else if (strcmp(optarg, "scale") == 0) {
+						printf("%f\n", [screen scale]);
 					} else {
 						errx(1, _("Unknown information type: %s\n"), optarg);
 					}
@@ -396,6 +402,9 @@ int main(int argc, char *argv[]) {
 					printf(_("Night Shift: %s\n"), stateAsString(getNightShift()));
 					printf(_("True Tone: %s\n"), stateAsString(getTrueTone()));
 					printf(_("Reduce White Point: %s\n"), stateAsString(_AXSReduceWhitePointEnabled() ? sOn : sOff));
+					printf(_("Scale: %f\n"), [screen scale]);
+					printf(_("Height: %f\n"), CGRectGetHeight([screen bounds]));
+					printf(_("Width: %f\n"), CGRectGetWidth([screen bounds]));
 				}
 				break;
 			}
