@@ -578,7 +578,7 @@ int main(int argc, char *argv[]) {
 		else {
 			switch (info) {
 				case iAutoBrightness:
-					printf("%s: %s\n", _("Auto-Brightness") stateAsString(getAutoBrightness()));
+					printf("%s: %s\n", _("Auto-Brightness"), stateAsString(getAutoBrightness()));
 					break;
 				case iBrightness:
 					printf("%s: %.6g\n", _("Brightness"), getBrightness());
@@ -593,7 +593,7 @@ int main(int argc, char *argv[]) {
 					printf("%s: %s\n", _("True Tone"), stateAsString(getTrueTone()));
 					break;
 				case iReduceWhitePoint:
-					printf("%s: %s\n", _("Reduce White Point") stateAsString(_AXSReduceWhitePointEnabled() ? sOn : sOff));
+					printf("%s: %s\n", _("Reduce White Point"), stateAsString(_AXSReduceWhitePointEnabled() ? sOn : sOff));
 					break;
 				case iHeight:
 					printf("%s: %f\n", _("Height"), CGRectGetHeight([screen bounds]));
@@ -606,11 +606,11 @@ int main(int argc, char *argv[]) {
 					break;
 				default:
 					printf("%s: %.6g\n", _("Brightness"), getBrightness());
-					printf("%s: %s\n", _("Auto-Brightness") stateAsString(getAutoBrightness()));
+					printf("%s: %s\n", _("Auto-Brightness"), stateAsString(getAutoBrightness()));
 					printf("%s: %s\n", _("Dark Mode"), stateAsString(getDarkMode()));
 					printf("%s: %s\n", _("Night Shift"), stateAsString(getNightShift()));
 					printf("%s: %s\n", _("True Tone"), stateAsString(getTrueTone()));
-					printf("%s: %s\n" _("Reduce White Point") stateAsString(_AXSReduceWhitePointEnabled() ? sOn : sOff));
+					printf("%s: %s\n", _("Reduce White Point"), stateAsString(_AXSReduceWhitePointEnabled() ? sOn : sOff));
 					printf("%s: %f\n", _("Height"), CGRectGetHeight([screen bounds]));
 					printf("%s: %f\n", _("Width"), CGRectGetWidth([screen bounds]));
 					printf("%s: %f\n", _("Scale"), [screen scale]);
