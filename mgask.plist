@@ -7,5 +7,9 @@
 	<true/>
 	<key>com.apple.private.MobileGestalt.AllowedProtectedKeys</key>
 	<true/>
+	<key>com.apple.osanalytics.otatasking-service-access</key>
+	<true/>
+	<key>com.apple.nfcd.hwmanager</key>
+	<true/>
 </dict>
 </plist>

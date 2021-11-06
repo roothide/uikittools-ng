@@ -11,6 +11,8 @@
 .Sh SYNOPSIS
 .Nm
 .Op Fl jpq
+.Op Fl -gssc
+.Op Fl -pretty
 .Ar question ...
 .Sh DESCRIPTION
 The
@@ -19,9 +21,16 @@ utility will query MobileGestalt for the answer to the specified questions.
 Any arrays or dictionaries will be printed in JSON.
 .Sh OPTIONS
 .Bl -tag -width indent
+.It Fl -gssc
+Make
+.Nm
+act like the legacy
+.Nm gssc .
 .It Fl j , -json
 Print all keys in JSON.
-.It Fl p , -pretty
+.It Fl p , -plist
+Print all keys in NeXTSTEP plist format.
+.It Fl -pretty
 Pretty-print the JSON output.
 This will apply to just array and dictionaries or the whole output if
 .Fl j
