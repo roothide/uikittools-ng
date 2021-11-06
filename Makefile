@@ -6,11 +6,11 @@ STRIP   ?= strip
 LDID    ?= ldid
 
 ifneq (,$(findstring bridgeos,$(CC) $(CFLAGS)))
-ALL := gssc ldrestart mgask
+ALL := ldrestart mgask
 else ifneq (,$(findstring iphoneos,$(CC) $(CFLAGS)))
-ALL := gssc ldrestart sbdidlaunch sbreload uicache uiopen deviceinfo uialert uishoot uinotify uisave lsrebuild uidisplay mgask
+ALL := ldrestart sbdidlaunch sbreload uicache uiopen deviceinfo uialert uishoot uinotify uisave lsrebuild uidisplay mgask
 else ifneq (,$(findstring appletvos,$(CC) $(CFLAGS)))
-ALL := gssc ldrestart sbreload uicache uiopen deviceinfo uialert uishoot lsrebuild mgask
+ALL := ldrestart sbreload uicache uiopen deviceinfo uialert uishoot lsrebuild mgask
 else
 ALL := deviceinfo uialert mgask
 endif
@@ -44,9 +44,6 @@ ifeq (,$(findstring macosx,$(CC) $(CFLAGS)))
 endif
 
 all: sign po
-
-gssc: gssc.m gssc.plist
-	$(CC) -fobjc-arc -O3 $(CFLAGS) $< -o $@ $(LDFLAGS) -framework Foundation -lMobileGestalt
 
 ldrestart: ldrestart.c ent.plist
 	$(CC) -O3 $(CFLAGS) $< -o $@ $(LDFLAGS)
@@ -93,6 +90,7 @@ install: $(ALL) sign install-po
 	ln -sf deviceinfo $(DESTDIR)$(PREFIX)/bin/cfversion
 	ln -sf deviceinfo $(DESTDIR)$(PREFIX)/bin/uiduid
 	ln -sf deviceinfo $(DESTDIR)$(PREFIX)/bin/ecidecid
+	ln -sf mgask $(DESTDIR)$(PREFIX)/bin/gssc
 	install -d $(DESTDIR)$(PREFIX)/share/man/man1/
 	install -m644 $(patsubst %,man/%,$(MAN)) $(DESTDIR)$(PREFIX)/share/man/man1/
 	for lang in $(MANLANGS); do \
