@@ -1,6 +1,6 @@
 #import <Foundation/Foundation.h>
 
-NSObject *MGCopyAnswer(NSString *query);
+CFTypeRef MGCopyAnswer(CFStringRef);
 
 int main() {
 	@autoreleasepool {
@@ -585,7 +585,7 @@ int main() {
 		];
 		NSMutableDictionary *answers = [NSMutableDictionary dictionary];
 		for (NSString *query in gestaltKeys) {
-			NSObject *answer = MGCopyAnswer(query);
+			NSObject *answer = (__bridge_transfer NSObject *)MGCopyAnswer((__bridge CFStringRef)query);
 			if ([answer isKindOfClass:[NSString class]] ||
 				[answer isKindOfClass:[NSNumber class]] ||
 				[answer isKindOfClass:[NSArray class]]) {
