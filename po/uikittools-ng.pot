@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: uikittools-ng 2.1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-11-05 00:25+0100\n"
+"POT-Creation-Date: 2021-11-06 23:03-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -76,26 +76,26 @@ msgstr ""
 msgid "RebuildApplicationDatabases failed"
 msgstr ""
 
-#: ../mgask.m:31 ../uidisplay.m:372
+#: ../mgask.m:33 ../uidisplay.m:372
 #, c-format
 msgid "JSON formating failed: %s"
 msgstr ""
 
-#: ../mgask.m:73
+#: ../mgask.m:96
 #, c-format
-msgid "Usage: %s [-jp] question ...\n"
+msgid "Usage: %s [-jpq] [--gssc] [--pretty] question ...\n"
 msgstr ""
 
-#: ../mgask.m:88
+#: ../mgask.m:120
 #, c-format
 msgid "Cannot find key %s\n"
 msgstr ""
 
-#: ../mgask.m:104 ../uicache.m:253
+#: ../mgask.m:134 ../uicache.m:253
 msgid "true"
 msgstr ""
 
-#: ../mgask.m:104 ../uicache.m:253
+#: ../mgask.m:134 ../uicache.m:253
 msgid "false"
 msgstr ""
 
@@ -351,7 +351,6 @@ msgid "True Tone"
 msgstr ""
 
 #: ../uidisplay.m:515 ../uidisplay.m:560 ../uidisplay.m:596 ../uidisplay.m:613
-#, c-format
 msgid "Reduce White Point"
 msgstr ""
 
