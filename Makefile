@@ -31,6 +31,8 @@ CFLAGS  += -Wno-unguarded-availability-new
 
 APP_PATH ?= $(MEMO_PREFIX)/Applications
 
+all: sign po
+
 sign: $(ALL)
 	$(STRIP) $(ALL)
 ifeq (,$(findstring macosx,$(CC) $(CFLAGS)))
@@ -42,8 +44,6 @@ ifeq (,$(findstring macosx,$(CC) $(CFLAGS)))
 		fi; \
 	done
 endif
-
-all: sign po
 
 ldrestart: ldrestart.c ent.plist
 	$(CC) -O3 $(CFLAGS) $< -o $@ $(LDFLAGS)
