@@ -49,8 +49,10 @@ int main(int argc, char **argv) {
 	int ch, index;
 
 	if (!strcmp(getprogname(), "gssc")) {
-		gssc = plist = quiet = true;
-		json = false;
+		if (argc == 1) {
+			gssc = plist = quiet = true;
+			json = false;
+		}
 		fprintf(stderr, "The gssc utility is deprecated.\nPlease use mgask(1)\n");
 	}
 
