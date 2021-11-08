@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: uikittools-ng\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-11-05 00:25+0100\n"
-"PO-Revision-Date: 2021-11-05 03:43\n"
+"POT-Creation-Date: 2021-11-06 23:03-0400\n"
+"PO-Revision-Date: 2021-11-08 15:28\n"
 "Last-Translator: \n"
 "Language-Team: Chinese Traditional\n"
 "Language: zh_TW\n"
@@ -77,26 +77,26 @@ msgstr "缺少必須的方法"
 msgid "RebuildApplicationDatabases failed"
 msgstr "RebuildApplicationDatabases 失敗"
 
-#: ../mgask.m:31 ../uidisplay.m:372
+#: ../mgask.m:33 ../uidisplay.m:372
 #, c-format
 msgid "JSON formating failed: %s"
 msgstr "JSON格式化失敗：%s"
 
-#: ../mgask.m:73
+#: ../mgask.m:96
 #, c-format
-msgid "Usage: %s [-jp] question ...\n"
-msgstr "用法：%s [-jp] 問題...\n"
+msgid "Usage: %s [-jpq] [--gssc] [--pretty] question ...\n"
+msgstr "用法：%s [-jpq] [--gssc] [--pretty] 問題 ...\n"
 
-#: ../mgask.m:88
+#: ../mgask.m:120
 #, c-format
 msgid "Cannot find key %s\n"
 msgstr "找不到鍵值%s\n"
 
-#: ../mgask.m:104 ../uicache.m:253
+#: ../mgask.m:134 ../uicache.m:253
 msgid "true"
 msgstr "是"
 
-#: ../mgask.m:104 ../uicache.m:253
+#: ../mgask.m:134 ../uicache.m:253
 msgid "false"
 msgstr "否"
 
@@ -352,7 +352,6 @@ msgid "True Tone"
 msgstr "原色調"
 
 #: ../uidisplay.m:515 ../uidisplay.m:560 ../uidisplay.m:596 ../uidisplay.m:613
-#, c-format
 msgid "Reduce White Point"
 msgstr "減少白率"
 
