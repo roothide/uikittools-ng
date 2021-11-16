@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: uikittools-ng 2.1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-11-16 22:05+0100\n"
+"POT-Creation-Date: 2021-11-18 09:55-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -50,7 +50,7 @@ msgstr ""
 msgid "RebuildApplicationDatabases failed"
 msgstr ""
 
-#: ../mgask.m:33 ../uidisplay.m:398
+#: ../mgask.m:33 ../uialert.m:201 ../uidisplay.m:404
 #, c-format
 msgid "JSON formating failed: %s"
 msgstr ""
@@ -76,8 +76,8 @@ msgstr ""
 #: ../uialert.m:22
 #, c-format
 msgid ""
-"Usage: %s [-b body] [-p primary] [--priority 0-3] [-s second] [-t third] [--"
-"timeout number] title\n"
+"Usage: %s [-b body] [-i prompt] [-j] [-p primary] [--priority number] [-s "
+"second] [--secure prompt] [-t third] [--timeout number] title\n"
 "Copyright (C) 2021, Procursus Team. All Rights Reserved.\n"
 "\n"
 "Display an alert\n"
@@ -93,11 +93,14 @@ msgid ""
 "                           This will change the icon on macOS\n"
 "  -s, --secondary <text>   Second button text\n"
 "  -t, --tertiary <text>    Third button text\n"
+"  -i, --input <text>       Ask for text input\n"
+"  -j, --json               Print the output in JSON\n"
+"      --secure <text>      Show text field as secure\n"
 "      --timeout <num>      Number of seconds to wait before exiting\n"
 "\n"
 msgstr ""
 
-#: ../uialert.m:34
+#: ../uialert.m:37
 #, c-format
 msgid ""
 "Output:\n"
@@ -109,12 +112,12 @@ msgid ""
 "Contact the Procursus Team for support.\n"
 msgstr ""
 
-#: ../uialert.m:95
+#: ../uialert.m:124
 #, c-format
 msgid "the priority is %s: %s"
 msgstr ""
 
-#: ../uialert.m:112 ../uishoot.m:70
+#: ../uialert.m:142 ../uishoot.m:70
 #, c-format
 msgid "the timeout is %s: %s"
 msgstr ""
@@ -243,112 +246,112 @@ msgstr ""
 msgid "unregistering %s\n"
 msgstr ""
 
-#: ../uidisplay.m:104
+#: ../uidisplay.m:106
 #, c-format
 msgid ""
 "Usage: %s [-a state] [-b [+|-]num] [-d state] [-h] [-i [key]] [-j] [-l] [-n "
 "state] [-t state] [-w state]\n"
 msgstr ""
 
-#: ../uidisplay.m:115
+#: ../uidisplay.m:117
 #, c-format
 msgid "Invalid %s value: '%s', permitted values: 0, off, 1, on\n"
 msgstr ""
 
-#: ../uidisplay.m:123
+#: ../uidisplay.m:125
 msgid "on"
 msgstr ""
 
-#: ../uidisplay.m:125
+#: ../uidisplay.m:127
 msgid "off"
 msgstr ""
 
-#: ../uidisplay.m:127
+#: ../uidisplay.m:129
 msgid "not supported"
 msgstr ""
 
-#: ../uidisplay.m:179
+#: ../uidisplay.m:181
 msgid "Dark Mode is only supported on iOS 13 and higher.\n"
 msgstr ""
 
-#: ../uidisplay.m:212
+#: ../uidisplay.m:214
 msgid "Night Shift is not supported on this device.\n"
 msgstr ""
 
-#: ../uidisplay.m:248
+#: ../uidisplay.m:250
 msgid "True Tone is not supported on this device.\n"
 msgstr ""
 
-#: ../uidisplay.m:289
+#: ../uidisplay.m:291
 #, c-format
 msgid "Invalid brightness value: %s\n"
 msgstr ""
 
-#: ../uidisplay.m:303
+#: ../uidisplay.m:305
 #, c-format
 msgid "Invalid brightness value: %s, %s\n"
 msgstr ""
 
-#: ../uidisplay.m:326
+#: ../uidisplay.m:328
 #, c-format
 msgid "Unable to increase the brightness by %d, %.6g.\n"
 msgstr ""
 
-#: ../uidisplay.m:338
+#: ../uidisplay.m:340
 #, c-format
 msgid "Unable to decrease the brightness by %d, %.6g.\n"
 msgstr ""
 
-#: ../uidisplay.m:465
+#: ../uidisplay.m:471
 #, c-format
 msgid "Unknown information type: %s\n"
 msgstr ""
 
-#: ../uidisplay.m:519 ../uidisplay.m:586 ../uidisplay.m:635 ../uidisplay.m:669
+#: ../uidisplay.m:525 ../uidisplay.m:592 ../uidisplay.m:641 ../uidisplay.m:675
 msgid "Auto-Brightness"
 msgstr ""
 
-#: ../uidisplay.m:525 ../uidisplay.m:590 ../uidisplay.m:638 ../uidisplay.m:668
+#: ../uidisplay.m:531 ../uidisplay.m:596 ../uidisplay.m:644 ../uidisplay.m:674
 msgid "Brightness"
 msgstr ""
 
-#: ../uidisplay.m:531 ../uidisplay.m:594 ../uidisplay.m:641 ../uidisplay.m:670
+#: ../uidisplay.m:537 ../uidisplay.m:600 ../uidisplay.m:647 ../uidisplay.m:676
 msgid "Dark Mode"
 msgstr ""
 
-#: ../uidisplay.m:537 ../uidisplay.m:598 ../uidisplay.m:644 ../uidisplay.m:671
+#: ../uidisplay.m:543 ../uidisplay.m:604 ../uidisplay.m:650 ../uidisplay.m:677
 msgid "Night Shift"
 msgstr ""
 
-#: ../uidisplay.m:543 ../uidisplay.m:602 ../uidisplay.m:647 ../uidisplay.m:672
+#: ../uidisplay.m:549 ../uidisplay.m:608 ../uidisplay.m:653 ../uidisplay.m:678
 msgid "True Tone"
 msgstr ""
 
-#: ../uidisplay.m:549 ../uidisplay.m:606 ../uidisplay.m:650 ../uidisplay.m:673
+#: ../uidisplay.m:555 ../uidisplay.m:612 ../uidisplay.m:656 ../uidisplay.m:679
 msgid "Reduce White Point"
 msgstr ""
 
-#: ../uidisplay.m:555 ../uidisplay.m:610 ../uidisplay.m:653 ../uidisplay.m:674
+#: ../uidisplay.m:561 ../uidisplay.m:616 ../uidisplay.m:659 ../uidisplay.m:680
 msgid "Height"
 msgstr ""
 
-#: ../uidisplay.m:561 ../uidisplay.m:614 ../uidisplay.m:656 ../uidisplay.m:675
+#: ../uidisplay.m:567 ../uidisplay.m:620 ../uidisplay.m:662 ../uidisplay.m:681
 msgid "Width"
 msgstr ""
 
-#: ../uidisplay.m:567 ../uidisplay.m:618 ../uidisplay.m:659 ../uidisplay.m:676
+#: ../uidisplay.m:573 ../uidisplay.m:624 ../uidisplay.m:665 ../uidisplay.m:682
 msgid "Physical Height"
 msgstr ""
 
-#: ../uidisplay.m:573 ../uidisplay.m:622 ../uidisplay.m:662 ../uidisplay.m:677
+#: ../uidisplay.m:579 ../uidisplay.m:628 ../uidisplay.m:668 ../uidisplay.m:683
 msgid "Physical Width"
 msgstr ""
 
-#: ../uidisplay.m:579 ../uidisplay.m:626 ../uidisplay.m:665 ../uidisplay.m:678
+#: ../uidisplay.m:585 ../uidisplay.m:632 ../uidisplay.m:671 ../uidisplay.m:684
 msgid "Scale"
 msgstr ""
 
-#: ../uidisplay.m:683
+#: ../uidisplay.m:689
 msgid "-j/--json may only be used in combination with -i/--info"
 msgstr ""
 
