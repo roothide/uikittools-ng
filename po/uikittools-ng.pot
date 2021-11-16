@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: uikittools-ng 2.1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-11-14 18:16+0100\n"
+"POT-Creation-Date: 2021-11-15 21:42-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,12 +16,6 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
-
-#: ../deviceinfo.c:43 ../deviceinfo.c:88
-#, c-format
-msgid ""
-"Usage: %s [cfversion | ecid | locale | serial | uniqueid] [arguments ...]\n"
-msgstr ""
 
 #: ../ldrestart.c:78 ../sbreload-launchd.c:78
 #, c-format
@@ -46,26 +40,6 @@ msgstr ""
 #: ../ldrestart.c:141 ../sbreload-launchd.c:139
 #, c-format
 msgid "Unable to get launchd: %d\n"
-msgstr ""
-
-#: ../locale.m:16
-#, c-format
-msgid ""
-"Usage: deviceinfo locale [-ilcvh]\n"
-"Print the current locale\n"
-"\n"
-msgstr ""
-
-#: ../locale.m:19
-#, c-format
-msgid ""
-"-h --help      Give this help list.\n"
-" -i --identifier Print the locale identifier (default)\n"
-" -l --language   Print the language code\n"
-" -c --country    Print the country code\n"
-" -v --variant    Print the variant code\n"
-"\n"
-"If multiple output formats are specified the last will be used\n"
 msgstr ""
 
 #: ../lsrebuild.m:60
@@ -504,4 +478,30 @@ msgstr ""
 #: ../uishoot.m:148
 #, c-format
 msgid "Could not save screenshot to Photos: %s\n"
+msgstr ""
+
+#: ../info/deviceinfo.c:39 ../info/deviceinfo.c:72
+#, c-format
+msgid ""
+"Usage: %s [cfversion | ecid | locale | serial | uniqueid] [arguments ...]\n"
+msgstr ""
+
+#: ../info/locale.m:16
+#, c-format
+msgid ""
+"Usage: deviceinfo locale [-ilcvh]\n"
+"Print the current locale\n"
+"\n"
+msgstr ""
+
+#: ../info/locale.m:19
+#, c-format
+msgid ""
+"-h --help      Give this help list.\n"
+" -i --identifier Print the locale identifier (default)\n"
+" -l --language   Print the language code\n"
+" -c --country    Print the country code\n"
+" -v --variant    Print the variant code\n"
+"\n"
+"If multiple output formats are specified the last will be used\n"
 msgstr ""
