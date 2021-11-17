@@ -81,6 +81,7 @@ void IOHIDEventSetSenderID(void *event, uint64_t senderID);
 void IOHIDEventSystemClientDispatchEvent(void *client, void *event);
 
 uint64_t mach_absolute_time();
+int IOObjectRelease(void *object);
 
 typedef enum { sOn, sOff, sUnspecified } state;
 
@@ -380,7 +381,7 @@ void lock() {
 
 	IOHIDEventSetSenderID(lockButtonDown, 0x8000000817319372);
 	IOHIDEventSystemClientDispatchEvent(client, lockButtonDown);
-	CFRelease(lockButtonDown);
+	IOObjectRelease(lockButtonDown);
 
 	void *lockButtonUp = IOHIDEventCreateKeyboardEvent(
 		kCFAllocatorDefault, mach_absolute_time(), kHIDPage_Consumer,
@@ -388,9 +389,9 @@ void lock() {
 
 	IOHIDEventSetSenderID(lockButtonUp, 0x8000000817319372);
 	IOHIDEventSystemClientDispatchEvent(client, lockButtonUp);
-	CFRelease(lockButtonUp);
+	IOObjectRelease(lockButtonUp);
 
-	CFRelease(client);
+	IOObjectRelease(client);
 }
 
 void printJSON(id notJSON) {
