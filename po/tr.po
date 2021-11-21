@@ -5,42 +5,42 @@ msgstr ""
 "POT-Creation-Date: 2021-11-18 09:55-0500\n"
 "PO-Revision-Date: 2021-11-21 01:41\n"
 "Last-Translator: \n"
-"Language-Team: Chinese Simplified\n"
-"Language: zh_CN\n"
+"Language-Team: Turkish\n"
+"Language: tr_TR\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=1; plural=0;\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Crowdin-Project: uikittools-ng\n"
 "X-Crowdin-Project-ID: 482777\n"
-"X-Crowdin-Language: zh-CN\n"
+"X-Crowdin-Language: tr\n"
 "X-Crowdin-File: uikittools-ng.pot\n"
 "X-Crowdin-File-ID: 3\n"
 
 #: ../ldrestart.c:78 ../sbreload-launchd.c:78
 #, c-format
 msgid "Error stopping service:  %d - %s\n"
-msgstr "停止服务时出错：  %d - %s\n"
+msgstr "Error stopping service:  %d - %s\n"
 
 #: ../ldrestart.c:112 ../sbreload-launchd.c:106
 #, c-format
 msgid "Error: no services returned for list\n"
-msgstr "错误： 返回列表无服务\n"
+msgstr ""
 
 #: ../ldrestart.c:120 ../sbreload-launchd.c:114
 #, c-format
 msgid "Error: services returned for list aren't a dictionary!\n"
-msgstr "错误：返回服务列表不是字典！\n"
+msgstr ""
 
 #: ../ldrestart.c:138 ../sbreload-launchd.c:136
 #, c-format
 msgid "Error:  %d - %s\n"
-msgstr "错误:  %d - %s\n"
+msgstr "Hata: %d - %s\n"
 
 #: ../ldrestart.c:141 ../sbreload-launchd.c:139
 #, c-format
 msgid "Unable to get launchd: %d\n"
-msgstr "无法获得launchd： %d\n"
+msgstr ""
 
 #: ../lsrebuild.m:60
 msgid "missing necessary method"
@@ -48,30 +48,30 @@ msgstr ""
 
 #: ../lsrebuild.m:66
 msgid "RebuildApplicationDatabases failed"
-msgstr "重建应用程序数据库失败"
+msgstr ""
 
 #: ../mgask.m:33 ../uialert.m:201 ../uidisplay.m:404
 #, c-format
 msgid "JSON formating failed: %s"
-msgstr "JSON格式化失败： %s"
+msgstr ""
 
 #: ../mgask.m:98
 #, c-format
 msgid "Usage: %s [-jpq] [--gssc] [--pretty] question ...\n"
-msgstr "用法： %s [-jpq] [--gssc] [--pretty] 问题 ...\n"
+msgstr ""
 
 #: ../mgask.m:122
 #, c-format
 msgid "Cannot find key %s\n"
-msgstr "找不到密钥%s\n"
+msgstr ""
 
 #: ../mgask.m:136 ../uicache.m:253
 msgid "true"
-msgstr "真值"
+msgstr ""
 
 #: ../mgask.m:136 ../uicache.m:253
 msgid "false"
-msgstr "错误"
+msgstr ""
 
 #: ../uialert.m:22
 #, c-format
@@ -92,16 +92,7 @@ msgid "  -b, --body <text>        Text for alert body\n"
 "  -j, --json               Print the output in JSON\n"
 "      --secure <text>      Show text field as secure\n"
 "      --timeout <num>      Number of seconds to wait before exiting\n\n"
-msgstr "  -b, --body <text>        文本用于警报正文\n"
-"  -p, --prior <text>     默认按钮文本而不是“确定”\n"
-"      --priority 0-3 警报优先级\n"
-"                           这将更改 macOS\n"
-"  - s, --secondary <text>   第二个按钮文本\n"
-"  - t, --terirator <text>    第三按钮文本\n"
-"  -i --input <text>       要求输入文本\n"
-"  -j, --json 在 JSON 中打印输出\n"
-"      --secure <text>      显示文本字段为安全\n"
-"      --timeout <num>      等待秒数才退出\n\n"
+msgstr ""
 
 #: ../uialert.m:37
 #, c-format
@@ -137,34 +128,36 @@ msgstr ""
 #: ../uicache.m:108
 #, c-format
 msgid "  -a, --all                Update all system and internal applications\n"
-msgstr ""
+msgstr "  -a, --all                Update all system and internal applications\n"
 
 #: ../uicache.m:109
 #, c-format
 msgid "  -f, --force              Force -a to reregister all Applications\n"
 "                              and modify App Store apps\n"
-msgstr ""
+msgstr "  -f, --force              Force -a to reregister all Applications\n"
+"                              and modify App Store apps\n"
 
 #: ../uicache.m:111
 #, c-format
 msgid "  -p, --path <path>        Update application bundle at the specified path\n"
-msgstr ""
+msgstr "  -p, --path <path>        Update application bundle at the specified path\n"
 
 #: ../uicache.m:112
 #, c-format
 msgid "  -u, --unregister <path>  Unregister application bundle at the specified path\n"
-msgstr ""
+msgstr "  -u, --unregister <path>  Unregister application bundle at the specified path\n"
 
 #: ../uicache.m:113
 #, c-format
 msgid "  -r, --respring           Restart SpringBoard and backboardd after\n"
 "                              updating applications\n"
-msgstr ""
+msgstr "  -r, --respring           Restart SpringBoard and backboardd after\n"
+"                              updating applications\n"
 
 #: ../uicache.m:115
 #, c-format
 msgid "  -l, --list               List the bundle ids of installed apps\n"
-msgstr ""
+msgstr "  -l, --list               Kurulu uygulamaların idlerini listele\n"
 
 #: ../uicache.m:116
 #, c-format
@@ -179,27 +172,27 @@ msgstr ""
 #: ../uicache.m:119 ../uisave.m:27
 #, c-format
 msgid "Contact the Procursus Team for support.\n"
-msgstr ""
+msgstr "Contact the Procursus Team for support.\n"
 
 #: ../uicache.m:141
 #, c-format
 msgid "uicache does not support App Store apps.\n"
-msgstr ""
+msgstr "uicache does not support App Store apps.\n"
 
 #: ../uicache.m:143
 #, c-format
 msgid "Continuing anyway...\n"
-msgstr ""
+msgstr "Continuing anyway...\n"
 
 #: ../uicache.m:213
 #, c-format
 msgid "Error: Unable to register %s\n"
-msgstr ""
+msgstr "Error: Unable to register %s\n"
 
 #: ../uicache.m:217
 #, c-format
 msgid "Error: Unable to unregister %s\n"
-msgstr ""
+msgstr "Error: Unable to unregister %s\n"
 
 #: ../uicache.m:237
 #, c-format
@@ -212,27 +205,35 @@ msgid "Name: %s\n"
 "TeamID: %s\n"
 "Type: %s\n"
 "Removeable: %s\n"
-msgstr ""
+msgstr "Name: %s\n"
+"BundleID: %s\n"
+"ExecutableName: %s\n"
+"Path: %s\n"
+"Container Path: %s\n"
+"VendorName: %s\n"
+"TeamID: %s\n"
+"Type: %s\n"
+"Removeable: %s\n"
 
 #: ../uicache.m:256 ../uicache.m:264
 #, c-format
 msgid "URLScheme: %s\n"
-msgstr ""
+msgstr "URLScheme: %s\n"
 
 #: ../uicache.m:269
 #, c-format
 msgid "%s is an invalid bundle id\n"
-msgstr ""
+msgstr "%s is an invalid bundle id\n"
 
 #: ../uicache.m:373
 #, c-format
 msgid "registering %s\n"
-msgstr ""
+msgstr "registering %s\n"
 
 #: ../uicache.m:378
 #, c-format
 msgid "unregistering %s\n"
-msgstr ""
+msgstr "unregistering %s\n"
 
 #: ../uidisplay.m:106
 #, c-format
@@ -242,56 +243,56 @@ msgstr ""
 #: ../uidisplay.m:117
 #, c-format
 msgid "Invalid %s value: '%s', permitted values: 0, off, 1, on\n"
-msgstr ""
+msgstr "Invalid %s value: '%s', permitted values: 0, off, 1, on\n"
 
 #: ../uidisplay.m:125
 msgid "on"
-msgstr ""
+msgstr "açık"
 
 #: ../uidisplay.m:127
 msgid "off"
-msgstr ""
+msgstr "kapalı"
 
 #: ../uidisplay.m:129
 msgid "not supported"
-msgstr ""
+msgstr "desteklenmiyor"
 
 #: ../uidisplay.m:181
 msgid "Dark Mode is only supported on iOS 13 and higher.\n"
-msgstr ""
+msgstr "Koyu mod iOS 13 veya üst sürümü gerektirir.\n"
 
 #: ../uidisplay.m:214
 msgid "Night Shift is not supported on this device.\n"
-msgstr ""
+msgstr "Night Shift is not supported on this device.\n"
 
 #: ../uidisplay.m:250
 msgid "True Tone is not supported on this device.\n"
-msgstr ""
+msgstr "True Tone is not supported on this device.\n"
 
 #: ../uidisplay.m:291
 #, c-format
 msgid "Invalid brightness value: %s\n"
-msgstr ""
+msgstr "Invalid brightness value: %s\n"
 
 #: ../uidisplay.m:305
 #, c-format
 msgid "Invalid brightness value: %s, %s\n"
-msgstr ""
+msgstr "Invalid brightness value: %s, %s\n"
 
 #: ../uidisplay.m:328
 #, c-format
 msgid "Unable to increase the brightness by %d, %.6g.\n"
-msgstr ""
+msgstr "Unable to increase the brightness by %d, %.6g.\n"
 
 #: ../uidisplay.m:340
 #, c-format
 msgid "Unable to decrease the brightness by %d, %.6g.\n"
-msgstr ""
+msgstr "Unable to decrease the brightness by %d, %.6g.\n"
 
 #: ../uidisplay.m:471
 #, c-format
 msgid "Unknown information type: %s\n"
-msgstr ""
+msgstr "Unknown information type: %s\n"
 
 #: ../uidisplay.m:525 ../uidisplay.m:592 ../uidisplay.m:641 ../uidisplay.m:675
 msgid "Auto-Brightness"
@@ -443,7 +444,7 @@ msgstr ""
 #: ../uishoot.m:96
 #, c-format
 msgid "Could not capture screenshot!\n"
-msgstr ""
+msgstr "Ekran görüntüsü alınmadı!\n"
 
 #: ../uishoot.m:123
 #, c-format
@@ -453,7 +454,7 @@ msgstr ""
 #: ../uishoot.m:132
 #, c-format
 msgid "Could not write image to %s: %s\n"
-msgstr ""
+msgstr "%s dosyasına yazılamadı: %s\n"
 
 #: ../uishoot.m:148
 #, c-format
@@ -463,7 +464,7 @@ msgstr ""
 #: ../info/deviceinfo.c:39 ../info/deviceinfo.c:72
 #, c-format
 msgid "Usage: %s [cfversion | ecid | locale | serial | uniqueid] [arguments ...]\n"
-msgstr "用法： %s [cfversion | ecid | 语言 | 序列号| UUID] [参数...]\n"
+msgstr ""
 
 #: ../info/locale.m:16
 #, c-format
