@@ -121,8 +121,7 @@ int main(int argc, char **argv) {
 				switch (strtonum(optarg, 0, 3, &errstr)) {
 					case 0:
 						if (errstr != NULL)
-							errx(1, _("the priority is %s: %s"), errstr,
-								 optarg);
+							err(1, "%s", optarg);
 						priority = kCFUserNotificationPlainAlertLevel;
 						break;
 					case 1:
@@ -139,7 +138,7 @@ int main(int argc, char **argv) {
 			case OPT_TIMEOUT:
 				timeout = strtonum(optarg, 0, INT_MAX, &errstr);
 				if (errstr != NULL)
-					errx(1, _("the timeout is %s: %s"), errstr, optarg);
+					err(1, "%s", optarg);
 				break;
 			default:
 				usage();

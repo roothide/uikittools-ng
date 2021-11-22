@@ -301,9 +301,8 @@ void setBrightness(char *value) {
 		number = (int)strtonum(value, 0, 100, &errstr);
 	}
 
-	if (errstr != NULL) {
-		errx(1, _("Invalid brightness value: %s, %s\n"), value, errstr);
-	}
+	if (errstr != NULL)
+		err(1, "%s", value);
 
 	if (number == 0 && (increase || decrease)) return;
 
