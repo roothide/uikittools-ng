@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: uikittools-ng\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-11-06 23:03-0400\n"
-"PO-Revision-Date: 2021-11-08 15:28\n"
+"POT-Creation-Date: 2021-11-21 22:53-0500\n"
+"PO-Revision-Date: 2021-12-16 04:38\n"
 "Last-Translator: \n"
 "Language-Team: Chinese Traditional\n"
 "Language: zh_TW\n"
@@ -16,11 +16,6 @@ msgstr ""
 "X-Crowdin-Language: zh-TW\n"
 "X-Crowdin-File: uikittools-ng.pot\n"
 "X-Crowdin-File-ID: 3\n"
-
-#: ../deviceinfo.c:43 ../deviceinfo.c:88
-#, c-format
-msgid "Usage: %s [cfversion | ecid | locale | serial | uniqueid] [arguments ...]\n"
-msgstr "用法：%s [cfversion | ecid | locale | serial | uniqueid] [引數 ...]\n"
 
 #: ../ldrestart.c:78 ../sbreload-launchd.c:78
 #, c-format
@@ -47,28 +42,6 @@ msgstr "錯誤：%d - %s\n"
 msgid "Unable to get launchd: %d\n"
 msgstr "無法取得launchd: %d\n"
 
-#: ../locale.m:16
-#, c-format
-msgid "Usage: deviceinfo locale [-ilcvh]\n"
-"Print the current locale\n\n"
-msgstr "用法: deviceinfo locale [-ilcvh]\n"
-"印出目前的地區設定\n\n"
-
-#: ../locale.m:19
-#, c-format
-msgid "-h --help      Give this help list.\n"
-" -i --identifier Print the locale identifier (default)\n"
-" -l --language   Print the language code\n"
-" -c --country    Print the country code\n"
-" -v --variant    Print the variant code\n\n"
-"If multiple output formats are specified the last will be used\n"
-msgstr "-h --help      印出這幫助列表\n"
-" -i --identifier 印出地區設定識別碼（預設）\n"
-" -l --language   印出語言編號\n"
-" -c --country    印出國家編號\n"
-" -v --variant    印出變種編號\n\n"
-"如指定多於一種輸出格式，那麼最後被指定的格式 將會被使用。\n"
-
 #: ../lsrebuild.m:60
 msgid "missing necessary method"
 msgstr "缺少必須的方法"
@@ -77,36 +50,36 @@ msgstr "缺少必須的方法"
 msgid "RebuildApplicationDatabases failed"
 msgstr "RebuildApplicationDatabases 失敗"
 
-#: ../mgask.m:33 ../uidisplay.m:372
+#: ../mgask.m:33 ../uialert.m:200 ../uidisplay.m:403
 #, c-format
 msgid "JSON formating failed: %s"
 msgstr "JSON格式化失敗：%s"
 
-#: ../mgask.m:96
+#: ../mgask.m:98
 #, c-format
 msgid "Usage: %s [-jpq] [--gssc] [--pretty] question ...\n"
 msgstr "用法：%s [-jpq] [--gssc] [--pretty] 問題 ...\n"
 
-#: ../mgask.m:120
+#: ../mgask.m:122
 #, c-format
 msgid "Cannot find key %s\n"
 msgstr "找不到鍵值%s\n"
 
-#: ../mgask.m:134 ../uicache.m:253
+#: ../mgask.m:136 ../uicache.m:253
 msgid "true"
 msgstr "是"
 
-#: ../mgask.m:134 ../uicache.m:253
+#: ../mgask.m:136 ../uicache.m:253
 msgid "false"
 msgstr "否"
 
 #: ../uialert.m:22
 #, c-format
-msgid "Usage: %s [-b body] [-p primary] [--priority 0-3] [-s second] [-t third] [--timeout number] title\n"
+msgid "Usage: %s [-b body] [-i prompt] [-j] [-p primary] [--priority number] [-s second] [--secure prompt] [-t third] [--timeout number] title\n"
 "Copyright (C) 2021, Procursus Team. All Rights Reserved.\n\n"
 "Display an alert\n\n"
-msgstr "用法：%s [-b 正文] [-p 主要] [--priority 0-3] [-s 第二] [-t 第三] [--timeout 數字] 標題\n"
-"版權所有 (C) 2021，ProcursusTeam。 保留所有權利。\n\n"
+msgstr "用法：%s [-b 正文] [-i 提詞] [-j] [-p 主要] [--priority 0-3] [-s 第二] [--secure 提詞] [-t 第三] [--timeout 數字] 標題\n"
+"版權所有 (C) 2021，Procursus Team。 保留所有權利。\n\n"
 "顯示一個提示。\n\n"
 
 #: ../uialert.m:26
@@ -117,6 +90,9 @@ msgid "  -b, --body <text>        Text for alert body\n"
 "                           This will change the icon on macOS\n"
 "  -s, --secondary <text>   Second button text\n"
 "  -t, --tertiary <text>    Third button text\n"
+"  -i, --input <text>       Ask for text input\n"
+"  -j, --json               Print the output in JSON\n"
+"      --secure <text>      Show text field as secure\n"
 "      --timeout <num>      Number of seconds to wait before exiting\n\n"
 msgstr "  -b, --body <文字>         提示正文的文字\n"
 "  -p, --primary <文字>     預設按鈕的文字，而不是「OK」\n"
@@ -124,9 +100,12 @@ msgstr "  -b, --body <文字>         提示正文的文字\n"
 "                           這會更變在macOS上提示的圖標\n"
 "  -s, --secondary <文字>   第二個按鈕的文字\n"
 "  -t, --tertiary <文字>    第三個按鈕的文字\n"
+"  -i input <文字>    要求輸入文字\n"
+"  -j --json               以JSON格式印出輸出\n"
+"      --secure <文字>      以安全模式顯示文字區\n"
 "      --timeout <數字>      在退出之前等待的秒數\n\n"
 
-#: ../uialert.m:34
+#: ../uialert.m:37
 #, c-format
 msgid "Output:\n"
 "  0 - primary button\n"
@@ -140,16 +119,6 @@ msgstr "輸出\n"
 "  2 - 第三個按鈕\n"
 "  3 - 逾時或取消\n\n"
 "請聯繫Procursus團隊以取得支援。\n"
-
-#: ../uialert.m:95
-#, c-format
-msgid "the priority is %s: %s"
-msgstr "優先度為%s： %s"
-
-#: ../uialert.m:112 ../uishoot.m:70
-#, c-format
-msgid "the timeout is %s: %s"
-msgstr "逾時時間為%s:%s"
 
 #: ../uicache.m:104
 #, c-format
@@ -272,102 +241,105 @@ msgstr "註冊%s中\n"
 msgid "unregistering %s\n"
 msgstr "正在取消註冊%s\n"
 
-#: ../uidisplay.m:91
+#: ../uidisplay.m:106
 #, c-format
-msgid "Usage: %s [-a state] [-b [+|-]num] [-d state] [-h] [-i [key]] [-j] [-n state] [-t state] [-w state]\n"
-msgstr "用法：%s [-a 狀態] [-b [+|-]數字] [-d 狀態] [-h] [-i [鍵值]] [-j] [-n 狀態] [-t 狀態] [-w 狀態]\n"
+msgid "Usage: %s [-a state] [-b [+|-]num] [-d state] [-h] [-i [key]] [-j] [-l] [-n state] [-t state] [-w state]\n"
+msgstr "用法：%s [-a 狀態] [-b [+|-]數字] [-d 狀態] [-h] [-i [鍵值]] [-j] [-l] [-n 狀態] [-t 狀態] [-w 狀態]\n"
 
-#: ../uidisplay.m:102
+#: ../uidisplay.m:117
 #, c-format
 msgid "Invalid %s value: '%s', permitted values: 0, off, 1, on\n"
 msgstr "無效的%s數值：「%s」，允許的數值：0, off, 1, on\n"
 
-#: ../uidisplay.m:110
+#: ../uidisplay.m:125
 msgid "on"
 msgstr "開啟"
 
-#: ../uidisplay.m:112
+#: ../uidisplay.m:127
 msgid "off"
 msgstr "關閉"
 
-#: ../uidisplay.m:114
+#: ../uidisplay.m:129
 msgid "not supported"
 msgstr "不支援"
 
-#: ../uidisplay.m:171
+#: ../uidisplay.m:181
 msgid "Dark Mode is only supported on iOS 13 and higher.\n"
 msgstr "暗黑模式只在iOS 13或以上支持。\n"
 
-#: ../uidisplay.m:204
+#: ../uidisplay.m:214
 msgid "Night Shift is not supported on this device.\n"
 msgstr "這裝置不支援夜間模式。\n"
 
-#: ../uidisplay.m:240
+#: ../uidisplay.m:250
 msgid "True Tone is not supported on this device.\n"
 msgstr "這裝置不支援原色調。\n"
 
-#: ../uidisplay.m:281
+#: ../uidisplay.m:291
 #, c-format
 msgid "Invalid brightness value: %s\n"
 msgstr "無效的亮度數值：%s\n"
 
-#: ../uidisplay.m:295
-#, c-format
-msgid "Invalid brightness value: %s, %s\n"
-msgstr "無效的亮度數值：%s，%s\n"
-
-#: ../uidisplay.m:318
+#: ../uidisplay.m:327
 #, c-format
 msgid "Unable to increase the brightness by %d, %.6g.\n"
 msgstr "無法把亮度增加%d,%.6g。\n"
 
-#: ../uidisplay.m:330
+#: ../uidisplay.m:339
 #, c-format
 msgid "Unable to decrease the brightness by %d, %.6g.\n"
 msgstr "無法把亮度減少%d,%.6g。\n"
 
-#: ../uidisplay.m:434
+#: ../uidisplay.m:470
 #, c-format
 msgid "Unknown information type: %s\n"
 msgstr "未知的資訊類型：%s\n"
 
-#: ../uidisplay.m:485 ../uidisplay.m:540 ../uidisplay.m:581 ../uidisplay.m:609
+#: ../uidisplay.m:524 ../uidisplay.m:591 ../uidisplay.m:640 ../uidisplay.m:674
 msgid "Auto-Brightness"
 msgstr "自動亮度"
 
-#: ../uidisplay.m:491 ../uidisplay.m:544 ../uidisplay.m:584 ../uidisplay.m:608
+#: ../uidisplay.m:530 ../uidisplay.m:595 ../uidisplay.m:643 ../uidisplay.m:673
 msgid "Brightness"
 msgstr "量度"
 
-#: ../uidisplay.m:497 ../uidisplay.m:548 ../uidisplay.m:587 ../uidisplay.m:610
+#: ../uidisplay.m:536 ../uidisplay.m:599 ../uidisplay.m:646 ../uidisplay.m:675
 msgid "Dark Mode"
 msgstr "暗黑模式"
 
-#: ../uidisplay.m:503 ../uidisplay.m:552 ../uidisplay.m:590 ../uidisplay.m:611
+#: ../uidisplay.m:542 ../uidisplay.m:603 ../uidisplay.m:649 ../uidisplay.m:676
 msgid "Night Shift"
 msgstr "夜間模式"
 
-#: ../uidisplay.m:509 ../uidisplay.m:556 ../uidisplay.m:593 ../uidisplay.m:612
+#: ../uidisplay.m:548 ../uidisplay.m:607 ../uidisplay.m:652 ../uidisplay.m:677
 msgid "True Tone"
 msgstr "原色調"
 
-#: ../uidisplay.m:515 ../uidisplay.m:560 ../uidisplay.m:596 ../uidisplay.m:613
+#: ../uidisplay.m:554 ../uidisplay.m:611 ../uidisplay.m:655 ../uidisplay.m:678
 msgid "Reduce White Point"
 msgstr "減少白率"
 
-#: ../uidisplay.m:521 ../uidisplay.m:564 ../uidisplay.m:599 ../uidisplay.m:614
+#: ../uidisplay.m:560 ../uidisplay.m:615 ../uidisplay.m:658 ../uidisplay.m:679
 msgid "Height"
 msgstr "高度"
 
-#: ../uidisplay.m:527 ../uidisplay.m:568 ../uidisplay.m:602 ../uidisplay.m:615
+#: ../uidisplay.m:566 ../uidisplay.m:619 ../uidisplay.m:661 ../uidisplay.m:680
 msgid "Width"
 msgstr "寬度"
 
-#: ../uidisplay.m:533 ../uidisplay.m:572 ../uidisplay.m:605 ../uidisplay.m:616
+#: ../uidisplay.m:572 ../uidisplay.m:623 ../uidisplay.m:664 ../uidisplay.m:681
+msgid "Physical Height"
+msgstr "物理高度"
+
+#: ../uidisplay.m:578 ../uidisplay.m:627 ../uidisplay.m:667 ../uidisplay.m:682
+msgid "Physical Width"
+msgstr "物理寬度"
+
+#: ../uidisplay.m:584 ../uidisplay.m:631 ../uidisplay.m:670 ../uidisplay.m:683
 msgid "Scale"
 msgstr "比例"
 
-#: ../uidisplay.m:621
+#: ../uidisplay.m:688
 msgid "-j/--json may only be used in combination with -i/--info"
 msgstr "-j/--json 只能夠與 -i/--info 一同使用"
 
@@ -385,11 +357,6 @@ msgstr "授權請求失敗：%s\n"
 #, c-format
 msgid "Failed to add notification: %s\n"
 msgstr "加入通知失敗：%s\n"
-
-#: ../uinotify.m:93
-#, c-format
-msgid "the delay is %s: %s"
-msgstr "延遲為%s:%s"
 
 #: ../uiopen.m:37
 #, c-format
@@ -498,4 +465,31 @@ msgstr "無法寫入影像到：%s:%s\n"
 #, c-format
 msgid "Could not save screenshot to Photos: %s\n"
 msgstr "無法把螢幕截圖儲存到相片中：%s\n"
+
+#: ../info/deviceinfo.c:39 ../info/deviceinfo.c:72
+#, c-format
+msgid "Usage: %s [cfversion | ecid | locale | serial | uniqueid] [arguments ...]\n"
+msgstr "用法：%s [cfversion | ecid | locale | serial | uniqueid] [引數 ...]\n"
+
+#: ../info/locale.m:16
+#, c-format
+msgid "Usage: deviceinfo locale [-ilcvh]\n"
+"Print the current locale\n\n"
+msgstr "用法: deviceinfo locale [-ilcvh]\n"
+"印出目前的地區設定\n\n"
+
+#: ../info/locale.m:19
+#, c-format
+msgid "-h --help      Give this help list.\n"
+" -i --identifier Print the locale identifier (default)\n"
+" -l --language   Print the language code\n"
+" -c --country    Print the country code\n"
+" -v --variant    Print the variant code\n\n"
+"If multiple output formats are specified the last will be used\n"
+msgstr "-h --help      印出這幫助列表\n"
+" -i --identifier 印出地區設定識別碼（預設）\n"
+" -l --language   印出語言編號\n"
+" -c --country    印出國家編號\n"
+" -v --variant    印出變種編號\n\n"
+"如指定多於一種輸出格式，那麼最後被指定的格式 將會被使用。\n"
 
