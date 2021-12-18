@@ -87,10 +87,12 @@ mgask: mgask.m mgask.plist
 install: $(ALL) sign install-po
 	install -d $(DESTDIR)$(PREFIX)/bin/
 	install -m755 $(ALL) $(DESTDIR)$(PREFIX)/bin/
+ifneq ($(NO_COMPAT),1)
 	ln -sf deviceinfo $(DESTDIR)$(PREFIX)/bin/cfversion
 	ln -sf deviceinfo $(DESTDIR)$(PREFIX)/bin/uiduid
 	ln -sf deviceinfo $(DESTDIR)$(PREFIX)/bin/ecidecid
 	ln -sf mgask $(DESTDIR)$(PREFIX)/bin/gssc
+endif
 	install -d $(DESTDIR)$(PREFIX)/share/man/man1/
 	install -m644 $(patsubst %,man/%,$(MAN)) $(DESTDIR)$(PREFIX)/share/man/man1/
 	for lang in $(MANLANGS); do \
