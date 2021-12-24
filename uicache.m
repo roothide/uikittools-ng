@@ -131,7 +131,8 @@ void registerPath(char *path, int unregister) {
 	if (unregister && ![[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithUTF8String:path]]) {
 		LSApplicationProxy *app = [LSApplicationProxy
 			applicationProxyForIdentifier:[NSString stringWithUTF8String:path]];
-		path = (char *)[[app bundleURL] fileSystemRepresentation];
+		if (app.bundleURL)
+			path = (char *)[[app bundleURL] fileSystemRepresentation];
 	}
 
 	if ([[NSString stringWithUTF8String:path]
