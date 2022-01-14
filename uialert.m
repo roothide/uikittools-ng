@@ -57,7 +57,7 @@ int main(int argc, char **argv) {
 	textdomain(PACKAGE);
 #endif
 
-	CFOptionFlags flags;
+	CFOptionFlags flags = 0;
 	double timeout = 0, index = 0;
 	int priority = kCFUserNotificationNoteAlertLevel;
 	char *message = NULL;
