@@ -1,3 +1,0 @@
-files:
-  - source: /po/uikittools-ng.pot
-    translation: /po/%locale_with_underscore%.po
