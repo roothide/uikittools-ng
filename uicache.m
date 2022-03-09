@@ -7,7 +7,7 @@
 #import <stdio.h>
 
 #ifndef APP_PATH
-#define APP_PATH @"/private/preboot/procursus/Applications"
+#define APP_PATH @"/var/jb/Applications"
 #endif
 
 #ifndef NO_NLS

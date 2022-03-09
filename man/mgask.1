@@ -10,7 +10,7 @@
 .Nd ask MobileGestalt questions
 .Sh SYNOPSIS
 .Nm
-.Op Fl jpq
+.Op Fl cjpq
 .Op Fl -gssc
 .Op Fl -pretty
 .Ar question ...
@@ -21,6 +21,9 @@ utility will query MobileGestalt for the answer to the specified questions.
 Any arrays or dictionaries will be printed in JSON.
 .Sh OPTIONS
 .Bl -tag -width indent
+.It Fl c , -calculate
+For each key specified, calculate and print the obfuscated key.
+This will not return the value of the key, only the obfuscated key.
 .It Fl -gssc
 Make
 .Nm

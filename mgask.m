@@ -1,4 +1,5 @@
 #import <Foundation/Foundation.h>
+#include <CommonCrypto/CommonDigest.h>
 #include <err.h>
 #include <getopt.h>
 #include <stdbool.h>
@@ -37,6 +38,20 @@ const char *toJson(NSObject *object, bool prettyprint) {
 		.UTF8String;
 }
 
+NSString *obfuscateKey(const char *key)
+{
+	char buffer[256] = { 0 };
+	snprintf(buffer, sizeof(buffer), "%s%s", "MGCopyAnswer", key);
+
+	unsigned char md5Hash[CC_MD5_DIGEST_LENGTH] = { 0 };
+	CC_MD5(buffer, (CC_LONG)strlen(buffer), md5Hash);
+
+	NSData *data = [NSData dataWithBytes:md5Hash length:CC_MD5_DIGEST_LENGTH];
+	NSString *obfuscatedKey = [data base64EncodedStringWithOptions:0];
+
+	return [obfuscatedKey substringToIndex:22];
+}
+
 int main(int argc, char **argv) {
 #ifndef NO_NLS
 	setlocale(LC_ALL, "");
@@ -44,8 +59,8 @@ int main(int argc, char **argv) {
 	textdomain(PACKAGE);
 #endif
 
-	bool json, plist, prettyprint, quiet, gssc;
-	json = plist = prettyprint = quiet = gssc = false;
+	bool json, plist, prettyprint, quiet, gssc, calculate;
+	json = plist = prettyprint = quiet = gssc = calculate = false;
 	int ch, index;
 
 	if (!strcmp(getprogname(), "gssc")) {
@@ -67,9 +82,10 @@ int main(int argc, char **argv) {
 		{"quiet", no_argument, 0, 'q'},
 		{"gssc", no_argument, NULL, OPT_GSSC},
 		{"pretty", no_argument, NULL, OPT_PRETTY},
+		{"calculate", no_argument, NULL, 'c'},
 		{NULL, 0, NULL, 0}};
 
-	while ((ch = getopt_long(argc, argv, "jpq", longopts, &index)) != -1) {
+	while ((ch = getopt_long(argc, argv, "cjpq", longopts, &index)) != -1) {
 		switch (ch) {
 			case 'j':
 				json = true;
@@ -89,13 +105,16 @@ int main(int argc, char **argv) {
 			case 'q':
 				quiet = true;
 				break;
+			case 'c':
+				calculate = true;
+				break;
 		}
 	}
 	argv += optind;
 	argc -= optind;
 
 	if (!gssc && argc == 0) {
-		fprintf(stderr, _("Usage: %s [-jpq] [--gssc] [--pretty] question ...\n"), getprogname());
+		fprintf(stderr, _("Usage: %s [-cjpq] [--gssc] [--pretty] question ...\n"), getprogname());
 		return 1;
 	}
 
@@ -111,68 +130,82 @@ int main(int argc, char **argv) {
 		array = argv;
 	}
 
-	for (i = 0; i < count; i++) {
-		const char *answer;
-		CFTypeRef mganswer;
-		mganswer = MGCopyAnswer(
-			(__bridge CFStringRef)[NSString stringWithUTF8String:array[i]]);
+	if (calculate) {
+		for (i = 0; i < count; i++) {
+			if (!json && !plist) {
+				if (argc != 1)
+					printf("%s: ", array[i]);
 
-		if (mganswer == NULL) {
-			if (!quiet)
-				fprintf(stderr, _("Cannot find key %s\n"), array[i]);
-			goto skipprint;
+				printf("%s\n", [obfuscateKey(array[i]) UTF8String]);
+			} else {
+				[outDict setObject:obfuscateKey(array[i])
+					    forKey:[NSString stringWithUTF8String:array[i]]];
+			}
 		}
+	} else {
+		for (i = 0; i < count; i++) {
+			const char *answer;
+			CFTypeRef mganswer;
+			mganswer = MGCopyAnswer(
+				(__bridge CFStringRef)[NSString stringWithUTF8String:array[i]]);
 
-		CFTypeID typeid = CFGetTypeID(mganswer);
+			if (mganswer == NULL) {
+				if (!quiet)
+					fprintf(stderr, _("Cannot find key %s\n"), array[i]);
+				goto skipprint;
+			}
 
-		if (typeid == CFStringGetTypeID()) {
-			if (!json && !plist)
-				answer = [(__bridge_transfer NSString *)mganswer UTF8String];
-			else
-				[outDict setObject:(__bridge_transfer NSString *)mganswer
-										forKey:[NSString stringWithUTF8String:array[i]]];
-		} else if (typeid == CFBooleanGetTypeID()) {
-			if (!json && !plist)
-				answer = CFBooleanGetValue(mganswer) ? _("true") : _("false");
-			else
-				[outDict setObject:CFBooleanGetValue(mganswer) ? @YES : @NO
-										forKey:[NSString stringWithUTF8String:array[i]]];
-		} else if (typeid == CFNumberGetTypeID()) {
-			if (!json && !plist)
-				answer = [(__bridge_transfer NSNumber *)mganswer stringValue]
-							 .UTF8String;
-			else
-				[outDict setObject:(__bridge_transfer NSNumber *)mganswer
-										forKey:[NSString stringWithUTF8String:array[i]]];
-		} else if (typeid == CFDictionaryGetTypeID()) {
-			if (!json && !plist)
-				answer = toJson((__bridge NSObject *)mganswer, prettyprint);
-			else
-				[outDict setObject:(__bridge_transfer NSDictionary *)mganswer
-										forKey:[NSString stringWithUTF8String:array[i]]];
-		} else if (typeid == CFArrayGetTypeID()) {
-			if (!json && !plist)
-				answer = toJson((__bridge NSObject *)mganswer, prettyprint);
-			else
-				[outDict setObject:(__bridge_transfer NSArray *)mganswer
-										forKey:[NSString stringWithUTF8String:array[i]]];
-		} else {
-			if (!quiet)
-				fprintf(stderr, "%s has an unknown answer type\n", array[i]);
-			if (mganswer != NULL)
-				CFRelease(mganswer);
-			goto skipprint;
+			CFTypeID typeid = CFGetTypeID(mganswer);
+
+			if (typeid == CFStringGetTypeID()) {
+				if (!json && !plist)
+					answer = [(__bridge_transfer NSString *)mganswer UTF8String];
+				else
+					[outDict setObject:(__bridge_transfer NSString *)mganswer
+											forKey:[NSString stringWithUTF8String:array[i]]];
+			} else if (typeid == CFBooleanGetTypeID()) {
+				if (!json && !plist)
+					answer = CFBooleanGetValue(mganswer) ? _("true") : _("false");
+				else
+					[outDict setObject:CFBooleanGetValue(mganswer) ? @YES : @NO
+											forKey:[NSString stringWithUTF8String:array[i]]];
+			} else if (typeid == CFNumberGetTypeID()) {
+				if (!json && !plist)
+					answer = [(__bridge_transfer NSNumber *)mganswer stringValue]
+								 .UTF8String;
+				else
+					[outDict setObject:(__bridge_transfer NSNumber *)mganswer
+											forKey:[NSString stringWithUTF8String:array[i]]];
+			} else if (typeid == CFDictionaryGetTypeID()) {
+				if (!json && !plist)
+					answer = toJson((__bridge NSObject *)mganswer, prettyprint);
+				else
+					[outDict setObject:(__bridge_transfer NSDictionary *)mganswer
+											forKey:[NSString stringWithUTF8String:array[i]]];
+			} else if (typeid == CFArrayGetTypeID()) {
+				if (!json && !plist)
+					answer = toJson((__bridge NSObject *)mganswer, prettyprint);
+				else
+					[outDict setObject:(__bridge_transfer NSArray *)mganswer
+											forKey:[NSString stringWithUTF8String:array[i]]];
+			} else {
+				if (!quiet)
+					fprintf(stderr, "%s has an unknown answer type\n", array[i]);
+				if (mganswer != NULL)
+					CFRelease(mganswer);
+				goto skipprint;
+			}
+
+			if (!json && !plist) {
+				if (argc != 1)
+					printf("%s: ", array[i]);
+
+				printf("%s\n", answer);
+			}
+
+		skipprint:
+			continue;
 		}
-
-		if (!json && !plist) {
-			if (argc != 1)
-				printf("%s: ", array[i]);
-
-			printf("%s\n", answer);
-		}
-
-	skipprint:
-		continue;
 	}
 
 	if (json)
