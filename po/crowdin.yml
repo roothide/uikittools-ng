@@ -1,0 +1,9 @@
+commit_message: '[Localization] Update %language% translations'
+append_commit_message: false
+files:
+  - source: /uikittools-ng/po/uikittools-ng.pot
+    translation: /uikittools-ng/po/%two_letters_code%.po
+    languages_mapping:
+      two_letters_code:
+        pt-BR: pt_BR
+        zh-CN: zh_CN
