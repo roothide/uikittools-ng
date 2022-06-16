@@ -15,8 +15,7 @@
 #	define LOCALEDIR "/usr/share/locale"
 #endif
 
-extern int xpc_pipe_routine(xpc_object_t *xpc_pipe, xpc_object_t *inDict,
-							xpc_object_t **out);
+extern int xpc_pipe_routine(xpc_object_t pipe, xpc_object_t message, xpc_object_t *reply);
 extern char *xpc_strerror(int);
 
 #define HANDLE_SYSTEM 0
@@ -66,7 +65,7 @@ int stopService(const char *ServiceName) {
 	xpc_dictionary_set_uint64(dict, "type", 1);
 	xpc_dictionary_set_string(dict, "name", ServiceName);
 
-	xpc_object_t *outDict = NULL;
+	xpc_object_t outDict = NULL;
 
 	struct xpc_global_data *xpc_gd =
 		(struct xpc_global_data *)_os_alloc_once_table[1].ptr;
@@ -91,7 +90,7 @@ int updatePIDs() {
 	xpc_dictionary_set_uint64(dict, "type", 1);	 // set to 1
 	xpc_dictionary_set_bool(dict, "legacy", 1);	 // mandatory
 
-	xpc_object_t *outDict = NULL;
+	xpc_object_t outDict = NULL;
 
 	struct xpc_global_data *xpc_gd =
 		(struct xpc_global_data *)_os_alloc_once_table[1].ptr;
