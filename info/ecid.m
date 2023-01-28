@@ -4,7 +4,7 @@
 
 CFTypeRef MGCopyAnswer(CFStringRef);
 
-#ifndef NO_NLS
+#if NLS
 #	include <libintl.h>
 #	define _(a) gettext(a)
 #	define PACKAGE "uikittools-ng"
