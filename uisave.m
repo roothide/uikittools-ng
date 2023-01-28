@@ -2,7 +2,7 @@
 #import <Photos/Photos.h>
 #import <UIKit/UIKit.h>
 
-#ifndef NO_NLS
+#if NLS
 #	include <libintl.h>
 #	define _(a) gettext(a)
 #	define PACKAGE "uikittools-ng"
@@ -29,7 +29,7 @@ vary between iOS versions\n\n"));
 // clang-format on
 
 int main(int argc, char *argv[]) {
-#ifndef NO_NLS
+#if NLS
 	setlocale(LC_ALL, "");
 	bindtextdomain(PACKAGE, LOCALEDIR);
 	textdomain(PACKAGE);

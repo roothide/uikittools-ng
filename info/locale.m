@@ -3,7 +3,7 @@
 #import <getopt.h>
 #import <stdio.h>
 
-#ifndef NO_NLS
+#if NLS
 #	include <libintl.h>
 #	define _(a) gettext(a)
 #	define PACKAGE "uikittools-ng"

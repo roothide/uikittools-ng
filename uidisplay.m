@@ -5,7 +5,7 @@
 #import <getopt.h>
 #import <objc/runtime.h>
 
-#ifndef NO_NLS
+#if NLS
 #	include <libintl.h>
 #	define _(a) gettext(a)
 #	define PACKAGE "uikittools-ng"
@@ -406,7 +406,7 @@ void printJSON(id notJSON) {
 }
 
 int main(int argc, char *argv[]) {
-#ifndef NO_NLS
+#if NLS
 	setlocale(LC_ALL, "");
 	bindtextdomain(PACKAGE, LOCALEDIR);
 	textdomain(PACKAGE);

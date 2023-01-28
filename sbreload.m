@@ -3,7 +3,7 @@
 #import <objc/runtime.h>
 #include <TargetConditionals.h>
 
-#ifndef NO_NLS
+#if NLS
 #	include <libintl.h>
 #	define _(a) gettext(a)
 #	define PACKAGE "uikittools-ng"
@@ -45,7 +45,7 @@ int stopService(const char *ServiceName);
 int updatePIDs(void);
 
 int main() {
-#ifndef NO_NLS
+#if NLS
 	setlocale(LC_ALL, "");
 	bindtextdomain(PACKAGE, LOCALEDIR);
 	textdomain(PACKAGE);

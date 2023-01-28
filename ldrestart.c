@@ -6,7 +6,7 @@
 #ifndef LOCALEDIR
 #	define LOCALEDIR "/usr/share/locale"
 #endif
-#ifndef NO_NLS
+#if NLS
 #	include <libintl.h>
 #	define _(a) gettext(a)
 #	define PACKAGE "uikittools-ng"
@@ -88,7 +88,7 @@ static int stopService(const char *ServiceName) {
 }
 
 int main() {
-#ifndef NO_NLS
+#if NLS
 	setlocale(LC_ALL, "");
 	bindtextdomain(PACKAGE, LOCALEDIR);
 	textdomain(PACKAGE);

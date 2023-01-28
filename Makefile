@@ -22,9 +22,10 @@ ifeq ($(NLS),1)
 ifneq ($(LOCALEDIR),)
 CFLAGS  += -DLOCALEDIR=\"$(LOCALEDIR)\"
 endif
+CFLAGS  += -DNLS=1
 LDFLAGS += -lintl
 else
-CFLAGS  += -DNO_NLS
+CFLAGS  += -DNLS=0
 endif
 
 CFLAGS  += -Wno-unguarded-availability-new

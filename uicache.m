@@ -10,7 +10,7 @@
 #define APP_PATH @"/var/jb/Applications"
 #endif
 
-#ifndef NO_NLS
+#if NLS
 #	include <libintl.h>
 #	define _(a) gettext(a)
 #	define PACKAGE "uikittools-ng"
@@ -382,7 +382,7 @@ void registerAll() {
 }
 
 int main(int argc, char *argv[]) {
-#ifndef NO_NLS
+#if NLS
 	setlocale(LC_ALL, "");
 	bindtextdomain(PACKAGE, LOCALEDIR);
 	textdomain(PACKAGE);

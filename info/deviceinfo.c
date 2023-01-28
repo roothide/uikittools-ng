@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#ifndef NO_NLS
+#if NLS
 #	include <libintl.h>
 #	define _(a) gettext(a)
 #	define PACKAGE "uikittools-ng"
@@ -24,7 +24,7 @@ static int backwards_compat(const char* progname, int argc,
 static int command(const char* cmd, int argc, const char** args);
 
 int main(int argc, const char** argv) {
-#ifndef NO_NLS
+#if NLS
 	setlocale(LC_ALL, "");
 	bindtextdomain(PACKAGE, LOCALEDIR);
 	textdomain(PACKAGE);
