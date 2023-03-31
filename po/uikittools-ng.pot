@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: uikittools-ng 2.1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-05-08 20:20+0300\n"
+"POT-Creation-Date: 2023-03-31 08:08-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,27 +17,27 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../ldrestart.c:78 ../sbreload-launchd.c:78
+#: ../ldrestart.c:82 ../sbreload-launchd.c:82
 #, c-format
 msgid "Error stopping service:  %d - %s\n"
 msgstr ""
 
-#: ../ldrestart.c:112 ../sbreload-launchd.c:106
+#: ../ldrestart.c:116 ../sbreload-launchd.c:110
 #, c-format
 msgid "Error: no services returned for list\n"
 msgstr ""
 
-#: ../ldrestart.c:120 ../sbreload-launchd.c:114
+#: ../ldrestart.c:124 ../sbreload-launchd.c:118
 #, c-format
 msgid "Error: services returned for list aren't a dictionary!\n"
 msgstr ""
 
-#: ../ldrestart.c:138 ../sbreload-launchd.c:136
+#: ../ldrestart.c:142 ../sbreload-launchd.c:140
 #, c-format
 msgid "Error:  %d - %s\n"
 msgstr ""
 
-#: ../ldrestart.c:141 ../sbreload-launchd.c:139
+#: ../ldrestart.c:145 ../sbreload-launchd.c:143
 #, c-format
 msgid "Unable to get launchd: %d\n"
 msgstr ""
@@ -65,11 +65,11 @@ msgstr ""
 msgid "Cannot find key %s\n"
 msgstr ""
 
-#: ../mgask.m:168 ../uicache.m:254
+#: ../mgask.m:168 ../uicache.m:463
 msgid "true"
 msgstr ""
 
-#: ../mgask.m:168 ../uicache.m:254
+#: ../mgask.m:168 ../uicache.m:463
 msgid "false"
 msgstr ""
 
@@ -112,7 +112,7 @@ msgid ""
 "Contact the Procursus Team for support.\n"
 msgstr ""
 
-#: ../uicache.m:104
+#: ../uicache.m:135
 #, c-format
 msgid ""
 "Usage: %s [-afhlr] [-i id] [-p path] [-u path]\n"
@@ -120,118 +120,156 @@ msgid ""
 "\n"
 msgstr ""
 
-#: ../uicache.m:106
+#: ../uicache.m:137
 #, c-format
 msgid ""
 "Update iOS registered applications and optionally restart SpringBoard\n"
 "\n"
 msgstr ""
 
-#: ../uicache.m:108
+#: ../uicache.m:139
 #, c-format
 msgid ""
 "  -a, --all                Update all system and internal applications\n"
 msgstr ""
 
-#: ../uicache.m:109
+#: ../uicache.m:140
 #, c-format
 msgid ""
 "  -f, --force              Force -a to reregister all Applications\n"
 "                              and modify App Store apps\n"
 msgstr ""
 
-#: ../uicache.m:111
+#: ../uicache.m:142
 #, c-format
 msgid ""
 "  -p, --path <path>        Update application bundle at the specified path\n"
 msgstr ""
 
-#: ../uicache.m:112
+#: ../uicache.m:143
+#, c-format
+msgid ""
+"  -s, --force-system       When registering an app inside /var/containers, "
+"register it as system\n"
+msgstr ""
+
+#: ../uicache.m:144
 #, c-format
 msgid ""
 "  -u, --unregister <path>  Unregister application bundle at the specified "
 "path\n"
 msgstr ""
 
-#: ../uicache.m:113
+#: ../uicache.m:145
 #, c-format
 msgid ""
 "  -r, --respring           Restart SpringBoard and backboardd after\n"
 "                              updating applications\n"
 msgstr ""
 
-#: ../uicache.m:115
+#: ../uicache.m:147
 #, c-format
 msgid "  -l, --list               List the bundle ids of installed apps\n"
 msgstr ""
 
-#: ../uicache.m:116
+#: ../uicache.m:148
 #, c-format
 msgid "  -i, --info <bundleid>    Give information about given bundle id\n"
 msgstr ""
 
-#: ../uicache.m:117
+#: ../uicache.m:149
 #, c-format
 msgid ""
 "  -h, --help               Give this help list.\n"
 "\n"
 msgstr ""
 
-#: ../uicache.m:119 ../uisave.m:27
+#: ../uicache.m:151 ../uisave.m:27
 #, c-format
 msgid "Contact the Procursus Team for support.\n"
 msgstr ""
 
-#: ../uicache.m:142
-#, c-format
-msgid "uicache does not support App Store apps.\n"
-msgstr ""
-
-#: ../uicache.m:144
-#, c-format
-msgid "Continuing anyway...\n"
-msgstr ""
-
-#: ../uicache.m:214
+#: ../uicache.m:434
 #, c-format
 msgid "Error: Unable to register %s\n"
 msgstr ""
 
-#: ../uicache.m:218
+#: ../uicache.m:440
 #, c-format
 msgid "Error: Unable to unregister %s\n"
 msgstr ""
 
-#: ../uicache.m:238
+#: ../uicache.m:455
 #, c-format
-msgid ""
-"Name: %s\n"
-"BundleID: %s\n"
-"ExecutableName: %s\n"
-"Path: %s\n"
-"Container Path: %s\n"
-"VendorName: %s\n"
-"TeamID: %s\n"
-"Type: %s\n"
-"Removable: %s\n"
+msgid "Name: %s\n"
 msgstr ""
 
-#: ../uicache.m:257 ../uicache.m:265
+#: ../uicache.m:456
 #, c-format
-msgid "URLScheme: %s\n"
+msgid "Bundle Identifier: %s\n"
 msgstr ""
 
-#: ../uicache.m:270
+#: ../uicache.m:457
+#, c-format
+msgid "Executable Name: %s\n"
+msgstr ""
+
+#: ../uicache.m:458
+#, c-format
+msgid "Path: %s\n"
+msgstr ""
+
+#: ../uicache.m:459
+#, c-format
+msgid "Container Path: %s\n"
+msgstr ""
+
+#: ../uicache.m:460
+#, c-format
+msgid "Vendor Name: %s\n"
+msgstr ""
+
+#: ../uicache.m:461
+#, c-format
+msgid "Team ID: %s\n"
+msgstr ""
+
+#: ../uicache.m:462
+#, c-format
+msgid "Type: %s\n"
+msgstr ""
+
+#: ../uicache.m:463
+#, c-format
+msgid "Removable: %s\n"
+msgstr ""
+
+#: ../uicache.m:466
+#, c-format
+msgid "Group Container: %s -> %s\n"
+msgstr ""
+
+#: ../uicache.m:472
+#, c-format
+msgid "App Plugin Container: %s -> %s\n"
+msgstr ""
+
+#: ../uicache.m:478 ../uicache.m:484
+#, c-format
+msgid "URL Scheme: %s\n"
+msgstr ""
+
+#: ../uicache.m:489
 #, c-format
 msgid "%s is an invalid bundle id\n"
 msgstr ""
 
-#: ../uicache.m:374
+#: ../uicache.m:533
 #, c-format
 msgid "registering %s\n"
 msgstr ""
 
-#: ../uicache.m:379
+#: ../uicache.m:540
 #, c-format
 msgid "unregistering %s\n"
 msgstr ""

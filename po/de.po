@@ -190,6 +190,7 @@ msgstr ""
 #: ../uicache.m:448
 #, c-format
 msgid "Name: %s\n"
+msgstr ""
 
 #: ../uicache.m:449
 #, c-format
