@@ -131,7 +131,7 @@ extern CFStringRef kSecPolicyLeafMarkerOid;
 int force = 0;
 int verbose = 0;
 
-void help() {
+void help(void) {
 	printf(_("Usage: %s [-afhlr] [-i id] [-p path] [-u path]\n\
 Modified work Copyright (C) 2021, Procursus Team. All Rights Reserved.\n\n"), getprogname());
 	printf(_("Update iOS registered applications and optionally restart SpringBoard\n\n"));
@@ -438,8 +438,7 @@ void registerPath(NSString *path, BOOL unregister, BOOL forceSystem) {
 		if (![workspace registerApplicationDictionary:dictToRegister]) {
 			fprintf(stderr, _("Error: Unable to register %s\n"), path.fileSystemRepresentation);
 		}
-	}
-	else {
+	} else {
 		NSURL *url = [NSURL fileURLWithPath:path];
 		if (![workspace unregisterApplication:url]) {
 			fprintf(stderr, _("Error: Unable to unregister %s\n"), path.fileSystemRepresentation);
@@ -447,7 +446,7 @@ void registerPath(NSString *path, BOOL unregister, BOOL forceSystem) {
 	}
 }
 
-void listBundleID() {
+void listBundleID(void) {
 	LSApplicationWorkspace *workspace = [LSApplicationWorkspace defaultWorkspace];
 	for (LSApplicationProxy *app in [workspace allApplications]) {
 		printf("%s : %s\n", [[app bundleIdentifier] UTF8String], [[app bundleURL] fileSystemRepresentation]);
@@ -495,7 +494,7 @@ void infoForBundleID(NSString *bundleID) {
 	}
 }
 
-void registerAll() {
+void registerAll(void) {
 	if (force) {
 		[[LSApplicationWorkspace defaultWorkspace] _LSPrivateRebuildApplicationDatabasesForSystemApps:YES internal:YES user:NO];
 		return;
@@ -503,6 +502,7 @@ void registerAll() {
 
 	NSURL *appsURL = [NSURL fileURLWithPath:@"/Applications" isDirectory:YES];
 	NSURL *secondaryAppsURL = [NSURL fileURLWithPath:APP_PATH isDirectory:YES];
+	NSString *secondaryApps = [[secondaryAppsURL URLByResolvingSymlinksInPath] path];
 	NSMutableSet<NSURL *> *installedAppURLs = [[NSMutableSet alloc] init];
 
 	void (^installedAppEnumerator)(NSURL *appURL) = ^(NSURL *appURL) {
@@ -528,7 +528,7 @@ void registerAll() {
 	LSApplicationWorkspace *workspace = [LSApplicationWorkspace defaultWorkspace];
 	for (LSApplicationProxy *app in [workspace allApplications]) {
 		NSString *appPath = [app bundleURL].path;
-		if ([appPath hasPrefix:@"/Applications"] || [appPath hasPrefix:APP_PATH]) {
+		if ([appPath hasPrefix:@"/Applications"] || [appPath hasPrefix:APP_PATH] || [appPath hasPrefix:secondaryApps]) {
 			[registeredAppURLs addObject:[app bundleURL]];
 		}
 	}
