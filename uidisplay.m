@@ -317,9 +317,6 @@ void setBrightness(char *value) {
 		dlsym(backBoardServices, "BKSDisplayBrightnessGetCurrent");
 
 	if (increase) {
-		float (*BKSDisplayBrightnessGetCurrent)(void) =
-			dlsym(backBoardServices, "BKSDisplayBrightnessGetCurrent");
-
 		brightness += BKSDisplayBrightnessGetCurrent();
 
 		if (brightness > 1.0) {
@@ -329,9 +326,6 @@ void setBrightness(char *value) {
 		}
 
 	} else if (decrease) {
-		float (*BKSDisplayBrightnessGetCurrent)(void) =
-			dlsym(backBoardServices, "BKSDisplayBrightnessGetCurrent");
-
 		brightness = BKSDisplayBrightnessGetCurrent() - brightness;
 
 		if (brightness < 0.0) {

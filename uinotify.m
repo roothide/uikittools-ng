@@ -64,8 +64,9 @@ int main(int argc, char *argv[]) {
 
 	char *subtitle, *body, *bundleid;
 	long long delay = 0;
-	int ch, actionIndex = 0;
+	int ch = 0;
 	const char *errstr;
+	errstr = subtitle = body = bundleid = NULL;
 
 // clang-format off
 	static struct option longopts[] = {

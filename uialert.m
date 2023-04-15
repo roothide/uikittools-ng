@@ -58,16 +58,12 @@ int main(int argc, char **argv) {
 #endif
 
 	CFOptionFlags flags = 0;
-	double timeout = 0, index = 0;
+	double timeout = 0;
 	int priority = kCFUserNotificationNoteAlertLevel;
-	char *message = NULL;
-	char *defaultButton = NULL;
-	char *alternativeButton = NULL;
-	char *otherButton = NULL;
 	int ch;
-	const char *errstr;
+	const char *errstr = NULL;
 	bool json = false;
-	NSError *error;
+	NSError *error = NULL;
 
 	NSMutableDictionary *alert = [[NSMutableDictionary alloc] init];
 	NSMutableArray *inputs= [[NSMutableArray alloc] init];

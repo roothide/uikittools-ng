@@ -72,8 +72,7 @@ int main(int argc, char *argv[]) {
 
 	int index = 0, code = 0;
 
-	int opterr =
-		0;	// silence getopt errors, allow us to replicate old behaviour
+	opterr = 0;	// silence getopt errors, allow us to replicate old behaviour
 
 	while ((code = getopt_long(argc, argv, "u:b:a:p:h", longOptions, &index)) != -1) {
 		switch (code) {
