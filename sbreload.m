@@ -81,14 +81,14 @@ int main() {
 
 		updatePIDs();
 
-		if (springboardPID == old_springboardPID) {
+		if (old_springboardPID && springboardPID == old_springboardPID) {
 #if TARGET_OS_TV
 			stopService("com.apple.PineBoard");
 #else
 			stopService("com.apple.SpringBoard");
 #endif
 		}
-		if (backboarddPID == old_backboarddPID) {
+		if (old_backboarddPID && backboarddPID == old_backboarddPID) {
 			stopService("com.apple.backboardd");
 		}
 	}

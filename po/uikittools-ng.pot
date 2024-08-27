@@ -149,7 +149,7 @@ msgstr ""
 #: ../uicache.m:143
 #, c-format
 msgid ""
-"  -s, --force-system       When registering an app inside /var/containers, "
+"  -s, --force-system       When registering an app inside /var/containers/Bundle/Application, "
 "register it as system\n"
 msgstr ""
 

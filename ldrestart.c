@@ -127,13 +127,17 @@ int main() {
 
 			xpc_dictionary_apply(
 				svcs, ^bool(const char *label, xpc_object_t svc) {
-				  if (strcmp(label, "jailbreakd") == 0 ||
-					  strcmp(label, "com.apple.MobileFileIntegrity") == 0 ||
-					  strcmp(label, "amfidebilitate") == 0)
-					  return 1;
+					
+					// if (strstr(label, "openssh")  ||
+					//   strstr(label, "log") ||
+					//   strstr(label, "com.apple.diagnosticd")
+					//   ) {
+					//   return 1;
+					//   }
 
 				  int64_t pid = xpc_dictionary_get_int64(svc, "pid");
 				  if (pid != 0) {
+						//printf("restart %s : %d\n", label, pid); getchar();
 					  stopService(label);
 				  }
 				  return 1;

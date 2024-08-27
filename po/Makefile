@@ -3,7 +3,7 @@ SRC := $(wildcard *.po)
 all: $(SRC:%.po=%.mo)
 
 %.mo: %.po
-	msgfmt -o $@ $<
+	msgfmt -o $(shell echo $$PWD)/$@ $<
 
 clean:
 	rm -f *.mo

@@ -6,9 +6,7 @@
 #import <objc/runtime.h>
 #import <stdio.h>
 
-#ifndef APP_PATH
-#define APP_PATH @"/var/jb/Applications"
-#endif
+#include <roothide.h>
 
 #if NLS
 #	include <libintl.h>
@@ -32,11 +30,13 @@
 @end
 
 @interface LSApplicationProxy : NSObject
+- (id)correspondingApplicationRecord;
 + (id)applicationProxyForIdentifier:(id)arg1;
 - (id)localizedNameForContext:(id)arg1;
 - (_LSApplicationState *)appState;
 - (NSURL *)bundleURL;
 - (NSURL *)containerURL;
+- (NSURL *)dataContainerURL;
 - (NSString *)bundleExecutable;
 - (NSString *)bundleIdentifier;
 - (NSString *)vendorName;
@@ -44,6 +44,7 @@
 - (NSString *)applicationType;
 - (NSSet *)claimedURLSchemes;
 - (BOOL)isDeletable;
+- (NSDictionary*)environmentVariables;
 @property (nonatomic,readonly) NSDictionary *groupContainerURLs;
 @property (nonatomic,readonly) NSArray<LSPlugInKitProxy *> *plugInKitPlugins;
 @end
@@ -74,6 +75,9 @@ typedef NS_OPTIONS(NSUInteger, SBSRelaunchActionOptions) {
 };
 
 @interface MCMContainer : NSObject
+
+-(id)destroyContainerWithCompletion:(/*^block*/id)arg1 ;
+
 + (instancetype)containerWithIdentifier:(NSString *)identifier
 					  createIfNecessary:(BOOL)createIfNecessary
 								existed:(BOOL *)existed
@@ -140,7 +144,7 @@ Modified work Copyright (C) 2021, Procursus Team. All Rights Reserved.\n\n"), ge
 	printf(_("  -f, --force              Force -a to reregister all Applications\n\
 							  and modify App Store apps\n"));
 	printf(_("  -p, --path <path>        Update application bundle at the specified path\n"));
-	printf(_("  -s, --force-system       When registering an app inside /var/containers, register it as system\n"));
+	printf(_("  -s, --force-system       When registering an app with path /var/containers/Bundle/Application/<UUID>/*.app, register it as system\n"));
 	printf(_("  -u, --unregister <path>  Unregister application bundle at the specified path\n"));
 	printf(_("  -r, --respring           Restart SpringBoard and backboardd after\n\
 							  updating applications\n"));
@@ -248,22 +252,50 @@ NSDictionary *constructGroupsContainersForEntitlements(NSDictionary *entitlement
 	return nil;
 }
 
-BOOL constructContainerizationForEntitlements(NSDictionary *entitlements) {
+BOOL constructContainerizationForEntitlements(NSString* path, NSDictionary *entitlements, NSString** customContainerOut) {
+
+	//container-required: valid true/false, as first order, will ignore no-container and no-sandbox
+	NSObject *containerRequired = entitlements[@"com.apple.private.security.container-required"];
+	if (containerRequired && [containerRequired isKindOfClass:[NSNumber class]]) {
+		return [(NSNumber*)containerRequired boolValue];
+	}else if (containerRequired && [containerRequired isKindOfClass:[NSString class]]) {
+		*customContainerOut = (NSString*)containerRequired;
+		return YES; //right?
+	}
+
+	//no-container: only valid true
 	NSNumber *noContainer = entitlements[@"com.apple.private.security.no-container"];
 	if (noContainer && [noContainer isKindOfClass:[NSNumber class]]) {
 		if (noContainer.boolValue) {
 			return NO;
 		}
 	}
-
-	NSNumber *containerRequired = entitlements[@"com.apple.private.security.container-required"];
-	if (containerRequired && [containerRequired isKindOfClass:[NSNumber class]]) {
-		if (!containerRequired.boolValue) {
+	
+	//no-sandbox: only valid true
+	NSNumber *noSandbox = entitlements[@"com.apple.private.security.no-sandbox"];
+	if (noSandbox && [noSandbox isKindOfClass:[NSNumber class]]) {
+		if (noSandbox.boolValue) {
+			// may conflict with patcher
+			// NSNumber*AppDataContainers = entitlements[@"com.apple.private.security.storage.AppDataContainers"];
+			// if (AppDataContainers && [AppDataContainers isKindOfClass:[NSNumber class]]) {
+			// 	if (AppDataContainers.boolValue) return YES; //hack way
+			// }
+			
 			return NO;
 		}
 	}
 
-	return YES;
+	// //app-sandbox: invalid
+	// NSNumber *appSandbox = entitlements[@"com.apple.security.app-sandbox"];
+	// if (appSandbox && [appSandbox isKindOfClass:[NSNumber class]]) {
+	//
+	// }
+
+	// apps in containers/Bundle/ always containerized by default
+	if([path hasPrefix:@"/var/containers/Bundle/"] || [path hasPrefix:@"/private/var/containers/Bundle/"])
+		return YES;
+
+	return NO; //other paths such rootfs/preboot/var don't containerized by default
 }
 
 NSString *constructTeamIdentifierForEntitlements(NSDictionary *entitlements) {
@@ -274,9 +306,10 @@ NSString *constructTeamIdentifierForEntitlements(NSDictionary *entitlements) {
 	return nil;
 }
 
+//sometimes launching the app may lose those environment variables
 NSDictionary *constructEnvironmentVariablesForContainerPath(NSString *containerPath, BOOL isContainerized) {
-	NSString *homeDir = isContainerized ? containerPath : @"/var/mobile";
-	NSString *tmpDir = isContainerized ? [containerPath stringByAppendingPathComponent:@"tmp"] : @"/var/tmp";
+	NSString *homeDir = isContainerized ? containerPath : jbroot(@"/var/mobile");
+	NSString *tmpDir = isContainerized ? [containerPath stringByAppendingPathComponent:@"tmp"] : jbroot(@"/var/tmp");
 	return @{
 		@"CFFIXED_USER_HOME" : homeDir,
 		@"HOME" : homeDir,
@@ -284,166 +317,293 @@ NSDictionary *constructEnvironmentVariablesForContainerPath(NSString *containerP
 	};
 }
 
-void registerPath(NSString *path, BOOL unregister, BOOL forceSystem) {
-	if (!path) return;
 
+#define APP_PATH_PREFIX "/private/var/containers/Bundle/Application/"
+
+BOOL isDefaultInstallationPath(NSString* _path)
+{
+	if(!_path) return NO;
+
+	const char* path = _path.UTF8String;
+	
+	char rp[PATH_MAX];
+	if(!realpath(path, rp)) return NO;
+
+	if(strncmp(rp, APP_PATH_PREFIX, sizeof(APP_PATH_PREFIX)-1) != 0)
+		return NO;
+
+	char* p1 = rp + sizeof(APP_PATH_PREFIX)-1;
+	char* p2 = strchr(p1, '/');
+	if(!p2) return NO;
+
+	//is normal app or jailbroken app/daemon? 
+	if((p2 - p1) != (sizeof("xxxxxxxx-xxxx-xxxx-yxxx-xxxxxxxxxxxx")-1))
+		return NO;
+
+	return YES;
+}
+
+void registerPath(NSString *path, BOOL forceSystem)
+{
 	LSApplicationWorkspace *workspace = [LSApplicationWorkspace defaultWorkspace];
-	if (unregister && ![[NSFileManager defaultManager] fileExistsAtPath:path]) {
-		LSApplicationProxy *app = [LSApplicationProxy applicationProxyForIdentifier:path];
-		if (app.bundleURL) {
-			path = [app bundleURL].path;
-		}
-	}
 
 	path = path.stringByResolvingSymlinksInPath.stringByStandardizingPath;
 
 	NSDictionary *appInfoPlist = [NSDictionary dictionaryWithContentsOfFile:[path stringByAppendingPathComponent:@"Info.plist"]];
 	NSString *appBundleID = [appInfoPlist objectForKey:@"CFBundleIdentifier"];
 
-	if (appBundleID && !unregister) {
+	if(!appBundleID) {
+		fprintf(stderr, _("Error: Unable to parse app %s\n"), path.fileSystemRepresentation);
+		return;
+	}
+
+	BOOL isRemovableSystemApp = [[NSFileManager defaultManager] fileExistsAtPath:[@"/System/Library/AppSignatures" stringByAppendingPathComponent:appBundleID]];
+	BOOL registerAsUser = isDefaultInstallationPath(path) && !isRemovableSystemApp && !forceSystem;
+
+	NSMutableDictionary *dictToRegister = [NSMutableDictionary dictionary];
+
+	// Add entitlements
+
+	NSString *appExecutablePath = [path stringByAppendingPathComponent:appInfoPlist[@"CFBundleExecutable"]];
+	NSDictionary *entitlements = dumpEntitlementsFromBinaryAtPath(appExecutablePath);
+	if (entitlements) {
+		dictToRegister[@"Entitlements"] = entitlements;
+	}
+
+	// Misc
+
+	dictToRegister[@"ApplicationType"] = registerAsUser ? @"User" : @"System";
+	dictToRegister[@"CFBundleIdentifier"] = appBundleID;
+	dictToRegister[@"CodeInfoIdentifier"] = appBundleID;
+	dictToRegister[@"CompatibilityState"] = @0;
+
+ 	NSString* appDataContainerID = nil;
+	BOOL appContainerized = constructContainerizationForEntitlements(path, entitlements, &appDataContainerID);
+	dictToRegister[@"IsContainerized"] = @(appContainerized);
+	if (appContainerized) {
 		MCMContainer *appContainer = [NSClassFromString(@"MCMAppDataContainer") containerWithIdentifier:appBundleID createIfNecessary:YES existed:nil error:nil];
 		NSString *containerPath = [appContainer url].path;
 
-		BOOL isRemovableSystemApp = [[NSFileManager defaultManager] fileExistsAtPath:[@"/System/Library/AppSignatures" stringByAppendingPathComponent:appBundleID]];
-		BOOL registerAsUser = [path hasPrefix:@"/var/containers"] && !isRemovableSystemApp && !forceSystem;
+		dictToRegister[@"Container"] = containerPath; /*
+		if app executable using another container in entitlements, 
+		lsd still create the app-bundle-id container for EnvironmentVariables but set Container-Path to  /var/mobile,  
+		when executable  actually runs, the kernel sandbox framework will ask the containerermanagerd to get the container defined in entitlements */
+		dictToRegister[@"EnvironmentVariables"] = constructEnvironmentVariablesForContainerPath(containerPath, YES);
+	} else {
+		dictToRegister[@"EnvironmentVariables"] = constructEnvironmentVariablesForContainerPath(nil, NO);
+	}
 
-		NSMutableDictionary *dictToRegister = [NSMutableDictionary dictionary];
+	dictToRegister[@"IsDeletable"] = @(registerAsUser || isRemovableSystemApp);
+	dictToRegister[@"Path"] = path;
+	
+	dictToRegister[@"SignerOrganization"] = @"Apple Inc.";
+	dictToRegister[@"SignatureVersion"] = @0x20500;
+	dictToRegister[@"SignerIdentity"] = @"Apple iPhone OS Application Signing";
+	dictToRegister[@"IsAdHocSigned"] = @YES;
+	dictToRegister[@"LSInstallType"] = @1;
+	dictToRegister[@"HasMIDBasedSINF"] = @0;
+	dictToRegister[@"MissingSINF"] = @0;
+	dictToRegister[@"FamilyID"] = @0;
+	dictToRegister[@"IsOnDemandInstallCapable"] = @0;
+
+	NSString *teamIdentifier = constructTeamIdentifierForEntitlements(entitlements);
+	if (teamIdentifier) dictToRegister[@"TeamIdentifier"] = teamIdentifier;
+
+	// Add group containers
+
+	NSDictionary *appGroupContainers = constructGroupsContainersForEntitlements(entitlements, NO);
+	NSDictionary *systemGroupContainers = constructGroupsContainersForEntitlements(entitlements, YES);
+	NSMutableDictionary *groupContainers = [NSMutableDictionary new];
+	[groupContainers addEntriesFromDictionary:appGroupContainers];
+	[groupContainers addEntriesFromDictionary:systemGroupContainers];
+	if (groupContainers.count) {
+		if (appGroupContainers.count) {
+			dictToRegister[@"HasAppGroupContainers"] = @YES;
+		}
+		if (systemGroupContainers.count) {
+			dictToRegister[@"HasSystemGroupContainers"] = @YES;
+		}
+		dictToRegister[@"GroupContainers"] = groupContainers.copy;
+	}
+
+	// Add plugins
+
+	NSString *pluginsPath = [path stringByAppendingPathComponent:@"PlugIns"];
+	NSArray *plugins = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:pluginsPath error:nil];
+
+	NSMutableDictionary *bundlePlugins = [NSMutableDictionary dictionary];
+	for (NSString *pluginName in plugins) {
+		NSString *pluginPath = [pluginsPath stringByAppendingPathComponent:pluginName];
+
+		NSDictionary *pluginInfoPlist = [NSDictionary dictionaryWithContentsOfFile:[pluginPath stringByAppendingPathComponent:@"Info.plist"]];
+		NSString *pluginBundleID = [pluginInfoPlist objectForKey:@"CFBundleIdentifier"];
+
+		if (!pluginBundleID) continue;
+
+		NSMutableDictionary *pluginDict = [NSMutableDictionary dictionary];
 
 		// Add entitlements
 
-		NSString *appExecutablePath = [path stringByAppendingPathComponent:appInfoPlist[@"CFBundleExecutable"]];
-		NSDictionary *entitlements = dumpEntitlementsFromBinaryAtPath(appExecutablePath);
-		if (entitlements) {
-			dictToRegister[@"Entitlements"] = entitlements;
+		NSString *pluginExecutablePath = [pluginPath stringByAppendingPathComponent:pluginInfoPlist[@"CFBundleExecutable"]];
+		NSDictionary *pluginEntitlements = dumpEntitlementsFromBinaryAtPath(pluginExecutablePath);
+		if (pluginEntitlements) {
+			pluginDict[@"Entitlements"] = pluginEntitlements;
 		}
-		
 
 		// Misc
-	
-		dictToRegister[@"ApplicationType"] = registerAsUser ? @"User" : @"System";
-		dictToRegister[@"CFBundleIdentifier"] = appBundleID;
-		dictToRegister[@"CodeInfoIdentifier"] = appBundleID;
-		dictToRegister[@"CompatibilityState"] = @0;
-		BOOL appContainerized = constructContainerizationForEntitlements(entitlements);
-		dictToRegister[@"IsContainerized"] = @(appContainerized);
-		if (containerPath) {
-			dictToRegister[@"Container"] = containerPath;
-			dictToRegister[@"EnvironmentVariables"] = constructEnvironmentVariablesForContainerPath(containerPath, appContainerized);
-		}
-		dictToRegister[@"IsDeletable"] = @(registerAsUser || isRemovableSystemApp);
-		dictToRegister[@"Path"] = path;
-		
-		dictToRegister[@"SignerOrganization"] = @"Apple Inc.";
-		dictToRegister[@"SignatureVersion"] = @132352;
-		dictToRegister[@"SignerIdentity"] = @"Apple iPhone OS Application Signing";
-		dictToRegister[@"IsAdHocSigned"] = @YES;
-		dictToRegister[@"LSInstallType"] = @1;
-		dictToRegister[@"HasMIDBasedSINF"] = @0;
-		dictToRegister[@"MissingSINF"] = @0;
-		dictToRegister[@"FamilyID"] = @0;
-		dictToRegister[@"IsOnDemandInstallCapable"] = @0;
 
-		NSString *teamIdentifier = constructTeamIdentifierForEntitlements(entitlements);
-		if (teamIdentifier) dictToRegister[@"TeamIdentifier"] = teamIdentifier;
+		pluginDict[@"ApplicationType"] = @"PluginKitPlugin";
+		pluginDict[@"CFBundleIdentifier"] = pluginBundleID;
+		pluginDict[@"CodeInfoIdentifier"] = pluginBundleID;
+		pluginDict[@"CompatibilityState"] = @0;
 
-		// Add group containers
-
-		NSDictionary *appGroupContainers = constructGroupsContainersForEntitlements(entitlements, NO);
-		NSDictionary *systemGroupContainers = constructGroupsContainersForEntitlements(entitlements, YES);
-		NSMutableDictionary *groupContainers = [NSMutableDictionary new];
-		[groupContainers addEntriesFromDictionary:appGroupContainers];
-		[groupContainers addEntriesFromDictionary:systemGroupContainers];
-		if (groupContainers.count) {
-			if (appGroupContainers.count) {
-				dictToRegister[@"HasAppGroupContainers"] = @YES;
-			}
-			if (systemGroupContainers.count) {
-				dictToRegister[@"HasSystemGroupContainers"] = @YES;
-			}
-			dictToRegister[@"GroupContainers"] = groupContainers.copy;
-		}
-
-		// Add plugins
-
-		NSString *pluginsPath = [path stringByAppendingPathComponent:@"PlugIns"];
-		NSArray *plugins = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:pluginsPath error:nil];
-
-		NSMutableDictionary *bundlePlugins = [NSMutableDictionary dictionary];
-		for (NSString *pluginName in plugins) {
-			NSString *pluginPath = [pluginsPath stringByAppendingPathComponent:pluginName];
-
-			NSDictionary *pluginInfoPlist = [NSDictionary dictionaryWithContentsOfFile:[pluginPath stringByAppendingPathComponent:@"Info.plist"]];
-			NSString *pluginBundleID = [pluginInfoPlist objectForKey:@"CFBundleIdentifier"];
-
-			if (!pluginBundleID) continue;
+		NSString* pluginDataContainerID = nil;
+		BOOL pluginContainerized = YES; //pkd required plugin to have sandbox data container; constructContainerizationForEntitlements(pluginPath, pluginEntitlements, &pluginDataContainerID);
+		pluginDict[@"IsContainerized"] = @(pluginContainerized);
+		if (pluginContainerized) {
+			/* don't use pluginDataContainerID : a plugin may use app's container, but lsd still create plugin-bundle-id container for it */
 			MCMContainer *pluginContainer = [NSClassFromString(@"MCMPluginKitPluginDataContainer") containerWithIdentifier:pluginBundleID createIfNecessary:YES existed:nil error:nil];
 			NSString *pluginContainerPath = [pluginContainer url].path;
 
-			NSMutableDictionary *pluginDict = [NSMutableDictionary dictionary];
+			pluginDict[@"Container"] = pluginContainerPath;
+			pluginDict[@"EnvironmentVariables"] = constructEnvironmentVariablesForContainerPath(pluginContainerPath, pluginContainerized);
+		} else {
+			pluginDict[@"EnvironmentVariables"] = constructEnvironmentVariablesForContainerPath(nil, pluginContainerized);
+		}
 
-			// Add entitlements
+		pluginDict[@"Path"] = pluginPath;
+		pluginDict[@"PluginOwnerBundleID"] = appBundleID;
+		pluginDict[@"SignerOrganization"] = @"Apple Inc.";
+		pluginDict[@"SignatureVersion"] = @132352;
+		pluginDict[@"SignerIdentity"] = @"Apple iPhone OS Application Signing";
 
-			NSString *pluginExecutablePath = [pluginPath stringByAppendingPathComponent:pluginInfoPlist[@"CFBundleExecutable"]];
-			NSDictionary *pluginEntitlements = dumpEntitlementsFromBinaryAtPath(pluginExecutablePath);
-			if (pluginEntitlements) {
-				pluginDict[@"Entitlements"] = pluginEntitlements;
+		NSString *pluginTeamIdentifier = constructTeamIdentifierForEntitlements(pluginEntitlements);
+		if (pluginTeamIdentifier) pluginDict[@"TeamIdentifier"] = pluginTeamIdentifier;
+
+		// Add plugin group containers
+
+		NSDictionary *pluginAppGroupContainers = constructGroupsContainersForEntitlements(pluginEntitlements, NO);
+		NSDictionary *pluginSystemGroupContainers = constructGroupsContainersForEntitlements(pluginEntitlements, YES);
+		NSMutableDictionary *pluginGroupContainers = [NSMutableDictionary new];
+		[pluginGroupContainers addEntriesFromDictionary:pluginAppGroupContainers];
+		[pluginGroupContainers addEntriesFromDictionary:pluginSystemGroupContainers];
+		if (pluginGroupContainers.count) {
+			if (pluginAppGroupContainers.count) {
+				pluginDict[@"HasAppGroupContainers"] = @YES;
 			}
-
-			// Misc
-
-			pluginDict[@"ApplicationType"] = @"PluginKitPlugin";
-			pluginDict[@"CFBundleIdentifier"] = pluginBundleID;
-			pluginDict[@"CodeInfoIdentifier"] = pluginBundleID;
-			pluginDict[@"CompatibilityState"] = @0;
-			BOOL pluginContainerized = constructContainerizationForEntitlements(pluginEntitlements);
-			pluginDict[@"IsContainerized"] = @(pluginContainerized);
-			if (pluginContainerPath) {
-				pluginDict[@"Container"] = pluginContainerPath;
-				pluginDict[@"EnvironmentVariables"] = constructEnvironmentVariablesForContainerPath(pluginContainerPath, pluginContainerized);
+			if (pluginSystemGroupContainers.count) {
+				pluginDict[@"HasSystemGroupContainers"] = @YES;
 			}
-			pluginDict[@"Path"] = pluginPath;
-			pluginDict[@"PluginOwnerBundleID"] = appBundleID;
-			pluginDict[@"SignerOrganization"] = @"Apple Inc.";
-			pluginDict[@"SignatureVersion"] = @132352;
-			pluginDict[@"SignerIdentity"] = @"Apple iPhone OS Application Signing";
-
-			NSString *pluginTeamIdentifier = constructTeamIdentifierForEntitlements(pluginEntitlements);
-			if (pluginTeamIdentifier) pluginDict[@"TeamIdentifier"] = pluginTeamIdentifier;
-
-			// Add plugin group containers
-
-			NSDictionary *pluginAppGroupContainers = constructGroupsContainersForEntitlements(pluginEntitlements, NO);
-			NSDictionary *pluginSystemGroupContainers = constructGroupsContainersForEntitlements(pluginEntitlements, YES);
-			NSMutableDictionary *pluginGroupContainers = [NSMutableDictionary new];
-			[pluginGroupContainers addEntriesFromDictionary:pluginAppGroupContainers];
-			[pluginGroupContainers addEntriesFromDictionary:pluginSystemGroupContainers];
-			if (pluginGroupContainers.count) {
-				if (pluginAppGroupContainers.count) {
-					pluginDict[@"HasAppGroupContainers"] = @YES;
-				}
-				if (pluginSystemGroupContainers.count) {
-					pluginDict[@"HasSystemGroupContainers"] = @YES;
-				}
-				pluginDict[@"GroupContainers"] = pluginGroupContainers.copy;
-			}
-
-			[bundlePlugins setObject:pluginDict forKey:pluginBundleID];
-		}
-		[dictToRegister setObject:bundlePlugins forKey:@"_LSBundlePlugins"];
-
-		if (verbose) {
-			printf("Registering dictionary: %s\n", dictToRegister.description.UTF8String);
+			pluginDict[@"GroupContainers"] = pluginGroupContainers.copy;
 		}
 
-		if (![workspace registerApplicationDictionary:dictToRegister]) {
-			fprintf(stderr, _("Error: Unable to register %s\n"), path.fileSystemRepresentation);
-		}
-	} else {
-		NSURL *url = [NSURL fileURLWithPath:path];
-		if (![workspace unregisterApplication:url]) {
-			fprintf(stderr, _("Error: Unable to unregister %s\n"), path.fileSystemRepresentation);
-		}
+		[bundlePlugins setObject:pluginDict forKey:pluginBundleID];
 	}
+	[dictToRegister setObject:bundlePlugins forKey:@"_LSBundlePlugins"];
+
+	if (verbose) {
+		printf("Registering dictionary: %s\n", dictToRegister.description.UTF8String);
+	}
+
+	if (![workspace registerApplicationDictionary:dictToRegister]) {
+		fprintf(stderr, _("Error: Unable to register %s\n"), path.fileSystemRepresentation);
+	}
+}
+
+void unregisterApp(NSString* arg)
+{
+	NSString* path = nil;
+
+	if([arg containsString:@"/"]) {
+		path = jbroot(arg);
+	} else {
+		LSApplicationProxy *app = [LSApplicationProxy applicationProxyForIdentifier:arg];
+		if(app) path = app.bundleURL.path;
+	}
+
+	if(!path) {
+		fprintf(stderr, _("Error: Unable to find bundle for %s\n"), arg.UTF8String);
+		return;
+	}
+
+	LSApplicationWorkspace *workspace = [LSApplicationWorkspace defaultWorkspace];
+
+	NSURL* url = [NSURL fileURLWithPath:path];
+
+	if (![workspace unregisterApplication:url]) {
+		fprintf(stderr, _("Error: Unable to unregister"));
+	}
+
+	return;
+
+	// char jbrootpath[PATH_MAX];
+	// assert(realpath(jbroot("/"), jbrootpath) != NULL);
+
+	// //if arg is a path, it should be a jbroot-based path and starts with /
+	// NSString* path = [NSString stringWithFormat:@"%s%@", jbrootpath, arg];
+
+	// bool usingPath = [arg containsString:@"/"];
+	// if(usingPath) {
+	// 	NSString* path = jbroot(arg);
+	// 	targetApp = [LSApplicationProxy applicationProxyForIdentifier:path];
+	// }
+
+	// LSApplicationProxy* targetApp = nil;
+	// LSApplicationWorkspace *workspace = [LSApplicationWorkspace defaultWorkspace];
+	// for (LSApplicationProxy *app in [workspace allApplications]) {
+	// 	//app.bundleURL is always *real-path*
+	// 	if( [app.bundleURL.path isEqualToString:path] || [app.bundleIdentifier isEqualToString:arg] )
+	// 	{
+	// 		targetApp = app;
+	// 		break;
+	// 	}
+	// }
+
+	// if(!targetApp) {
+	// 	fprintf(stderr, _("Error: Unable to find app %s\n"), arg.UTF8String);
+	// 	return;
+	// }
+
+	/* clean up the app's data containers, 
+	including group data containers and plug-in data containers, 
+	but don't use container-path directly, it may be /var/mobile */
+
+	// MCMContainer *appContainer = [NSClassFromString(@"MCMAppDataContainer") containerWithIdentifier:targetApp.bundleIdentifier createIfNecessary:NO existed:YES? error:nil];
+	// if(appContainer) {
+	// 	NSError *error;
+	// 	destroyContainerWithCompletion  //[NSFileManager.defaultManager removeItemAtPath:appContainer.url.path  error:nil];
+	// }
+
+	// // delete group container paths
+	// [[targetApp groupContainerURLs] enumerateKeysAndObjectsUsingBlock:^(NSString* groupId, NSURL* groupURL, BOOL* stop)
+	// {
+	// 	// If another app still has this group, don't delete it
+	// 	NSArray<LSApplicationProxy*>* appsWithGroup = applicationsWithGroupId(groupId);
+	// 	if(appsWithGroup.count > 1)
+	// 	{
+	// 		NSLog(@"[uninstallApp] not deleting %@, appsWithGroup.count:%lu", groupURL, appsWithGroup.count);
+	// 		return;
+	// 	}
+
+	// 	NSLog(@"[uninstallApp] deleting %@", groupURL);
+	// 	[[NSFileManager defaultManager] removeItemAtURL:groupURL error:nil];
+	// }];
+
+	// // delete app plugin paths
+	// for(LSPlugInKitProxy* pluginProxy in targetApp.plugInKitPlugins)
+	// {
+	// 	NSURL* pluginURL = pluginProxy.dataContainerURL;
+	// 	if(pluginURL)?????container????
+	// 	{
+	// 		NSLog(@"[uninstallApp] deleting %@", pluginURL);
+	// 		destroyContainerWithCompletion  //[[NSFileManager defaultManager] removeItemAtURL:pluginURL error:nil];
+	// 	}
+	// }
+
+	// //there is a bug in unregisterApplication:, if path does exists but its realpath changed, it fault.
+	// if (![workspace unregisterApplication:targetApp.bundleURL]) {
+	// 	fprintf(stderr, _("Error: Unable to unregister %s : %s\n"), targetApp.bundleIdentifier.UTF8String, targetApp.bundleURL.path.UTF8String);
+	// }
 }
 
 void listBundleID(void) {
@@ -453,18 +613,45 @@ void listBundleID(void) {
 	}
 }
 
+void printfNSObject(id obj)
+{
+	unsigned int outCount=0;
+    objc_property_t *properties =class_copyPropertyList([obj class], &outCount);
+    for (int i = 0; i<outCount; i++)
+    {
+        objc_property_t property = properties[i];
+        const char* char_f =property_getName(property);
+        NSString *propertyName = [NSString stringWithUTF8String:char_f];
+		@try{
+        id propertyValue = [obj valueForKey:(NSString *)propertyName];
+		printf("%s:\t%s\n", propertyName.UTF8String, [propertyValue debugDescription].UTF8String);
+		}
+        @catch (NSException *exception)
+        {
+			printf("***unaccessible %s\n", propertyName.UTF8String);
+		}
+    }
+    free(properties);
+}
+
 void infoForBundleID(NSString *bundleID) {
 	LSApplicationProxy *app = [LSApplicationProxy applicationProxyForIdentifier:bundleID];
+	// printfNSObject(app.correspondingApplicationRecord);
+
 	if ([[app appState] isValid]) {
 		printf(_("Name: %s\n"), [[app localizedNameForContext:nil] UTF8String]);
 		printf(_("Bundle Identifier: %s\n"), [[app bundleIdentifier] UTF8String]);
 		printf(_("Executable Name: %s\n"), [[app bundleExecutable] UTF8String]);
 		printf(_("Path: %s\n"), [[app bundleURL] fileSystemRepresentation]);
 		printf(_("Container Path: %s\n"), [[app containerURL] fileSystemRepresentation]);
+		printf(_("Data Container Path: %s\n"), [[app dataContainerURL] fileSystemRepresentation]);
 		printf(_("Vendor Name: %s\n"), [[app vendorName] UTF8String]);
 		printf(_("Team ID: %s\n"), [[app teamID] UTF8String]);
 		printf(_("Type: %s\n"), [[app applicationType] UTF8String]);
 		printf(_("Removable: %s\n"), [app isDeletable] ? _("true") : _("false"));
+
+		for(NSString* name in [app environmentVariables])
+			printf(_("EnvironmentVariables: %s = %s\n"), [name UTF8String], [[[app environmentVariables] objectForKey:name] UTF8String]);
 
 		[app.groupContainerURLs enumerateKeysAndObjectsUsingBlock:^(NSString *groupID, NSURL *groupURL, BOOL *stop) {
 			printf(_("Group Container: %s -> %s\n"), groupID.UTF8String, groupURL.fileSystemRepresentation);
@@ -497,53 +684,64 @@ void infoForBundleID(NSString *bundleID) {
 void registerAll(void) {
 	if (force) {
 		[[LSApplicationWorkspace defaultWorkspace] _LSPrivateRebuildApplicationDatabasesForSystemApps:YES internal:YES user:NO];
-		return;
+		//rebuild will unregister all jailbroken apps, so we need to re-register them //return;
 	}
 
-	NSURL *appsURL = [NSURL fileURLWithPath:@"/Applications" isDirectory:YES];
-	NSURL *secondaryAppsURL = [NSURL fileURLWithPath:APP_PATH isDirectory:YES];
-	NSString *secondaryApps = [[secondaryAppsURL URLByResolvingSymlinksInPath] path];
-	NSMutableSet<NSURL *> *installedAppURLs = [[NSMutableSet alloc] init];
+	//installed jailbroken apps in disk
+	NSMutableDictionary* installedApps = [[NSMutableDictionary alloc] init];
 
-	void (^installedAppEnumerator)(NSURL *appURL) = ^(NSURL *appURL) {
+	NSURL *appsURL = [NSURL fileURLWithPath:jbroot(APP_PATH) isDirectory:YES];
+	for (NSURL *appURL in [[NSFileManager defaultManager] contentsOfDirectoryAtURL:appsURL includingPropertiesForKeys:nil options:0 error:nil]) {
 		NSURL *infoPlistURL = [appURL URLByAppendingPathComponent:@"Info.plist"];
 		NSDictionary *infoPlist = [NSDictionary dictionaryWithContentsOfURL:infoPlistURL error:nil];
 		if (infoPlist) {
-			if (infoPlist[@"CFBundleExecutable"]) {
-				[installedAppURLs addObject:appURL];
+			NSString* bundleID = infoPlist[@"CFBundleIdentifier"];
+			if (bundleID) {
+				// if([installedApps objectForKey:bundleID]) {
+				// 	// duplicate app?
+				// }
+				installedApps[bundleID] = appURL;
 			}
 		}
-	};
-
-	for (NSURL *appURL in [[NSFileManager defaultManager] contentsOfDirectoryAtURL:appsURL includingPropertiesForKeys:nil options:0 error:nil]) {
-		installedAppEnumerator(appURL);
 	}
 
-	for (NSURL *appURL in [[NSFileManager defaultManager] contentsOfDirectoryAtURL:secondaryAppsURL includingPropertiesForKeys:nil options:0 error:nil]) {
-		installedAppEnumerator(appURL);
-	}
-
-	NSMutableSet<NSURL *> *registeredAppURLs = [[NSMutableSet alloc] init];
+	//registered jailbroken apps in LSD
+	NSMutableDictionary* registeredApps = [[NSMutableDictionary alloc] init];
 
 	LSApplicationWorkspace *workspace = [LSApplicationWorkspace defaultWorkspace];
 	for (LSApplicationProxy *app in [workspace allApplications]) {
-		NSString *appPath = [app bundleURL].path;
-		if ([appPath hasPrefix:@"/Applications"] || [appPath hasPrefix:APP_PATH] || [appPath hasPrefix:secondaryApps]) {
-			[registeredAppURLs addObject:[app bundleURL]];
+		NSString *appPath = app.bundleURL.path;
+		//printf("apppath=%s\n", appPath.UTF8String);
+		//ios app default storage directory, others are jailbroken apps
+		if ( ![appPath hasPrefix:@"/Applications/"]
+			&& ![appPath hasPrefix:@"/Developer/Applications/"]
+			&& !isDefaultInstallationPath(appPath)
+			) {
+			registeredApps[app.bundleIdentifier] = app.bundleURL;
 		}
 	}
 
-	for (NSURL *appURL in installedAppURLs) {
-		if (![registeredAppURLs containsObject:appURL]) {
-			if (verbose) printf(_("registering %s\n"), appURL.path.UTF8String);
-			registerPath(appURL.path, NO, NO);
+	for (NSString* bundleID in installedApps)
+	{
+		//re-randomized jbroot everytime we jailbreak,
+		//and don't re-register registered apps (may cause sileo get killed while installing apps) there is "uicache -a" in uikittools trigger
+		if (![registeredApps objectForKey:bundleID]
+			|| ![installedApps[bundleID] isEqual:registeredApps[bundleID]]
+		) {
+			NSString* bundlePath = [installedApps[bundleID] path];
+			if (verbose) printf(_("registering %s : %s\n"), bundleID.UTF8String, bundlePath.UTF8String);
+			registerPath(bundlePath, NO);
 		}
 	}
 
-	for (NSURL *appURL in registeredAppURLs) {
-		if (![installedAppURLs containsObject:appURL]) {
-			if (verbose) printf(_("unregistering %s\n"), appURL.path.UTF8String);
-			registerPath(appURL.path, YES, NO);
+	for (NSString *bundleID in registeredApps)
+	{
+		if (![installedApps objectForKey:bundleID])
+		{
+			NSString* bundlePath = [registeredApps[bundleID] path];
+			if (verbose) printf(_("unregistering %s : %s\n"), bundleID.UTF8String, bundlePath.UTF8String);
+			//using bundleID to unregister
+			unregisterApp(bundleID);
 		}
 	}
 }
@@ -635,11 +833,11 @@ int main(int argc, char *argv[]) {
 		}
 
 		for (NSString *path in registerSet) {
-			registerPath(path, 0, forceSystem);
+			registerPath(jbroot(path), forceSystem);
 		}
 
-		for (NSString *path in unregisterSet) {
-			registerPath(path, 1, forceSystem);
+		for (NSString *arg in unregisterSet) {
+			unregisterApp(arg);
 		}
 
 		if (all) {

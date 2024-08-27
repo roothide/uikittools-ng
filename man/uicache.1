@@ -49,10 +49,10 @@ Registers or updates an application bundle, at the specified
 .It Fl s , -force-system
 Force register an app as a system app.
 .Pp
-When registering an app inside /var/containers, it will normally
+When registering an app inside /var/containers/Bundle/Application, it will normally
 be registered as a user app.
 When using this flag, the app will be registered as a system app,
-regardless of whether it resides in /var/containers or not.
+regardless of whether it resides in /var/containers/Bundle/Application or not.
 .It Fl r , -respring
 Restarts SpringBoard and backboard after all other actions.
 .It Fl u , -unregister Ar path
