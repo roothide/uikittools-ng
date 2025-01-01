@@ -24,21 +24,22 @@
 - (BOOL)isValid;
 @end
 
-@interface LSPlugInKitProxy : NSObject
-- (NSString *)bundleIdentifier;
-@property (nonatomic,readonly) NSURL *dataContainerURL;
-@end
-
-@interface LSApplicationProxy : NSObject
-- (id)correspondingApplicationRecord;
-+ (id)applicationProxyForIdentifier:(id)arg1;
-- (id)localizedNameForContext:(id)arg1;
-- (_LSApplicationState *)appState;
+@interface LSBundleProxy : NSObject
+-(BOOL)isContainerized;
 - (NSURL *)bundleURL;
 - (NSURL *)containerURL;
 - (NSURL *)dataContainerURL;
 - (NSString *)bundleExecutable;
 - (NSString *)bundleIdentifier;
+@end
+
+@interface LSPlugInKitProxy : LSBundleProxy
+@end
+
+@interface LSApplicationProxy : LSBundleProxy
++ (id)applicationProxyForIdentifier:(id)arg1;
+- (id)localizedNameForContext:(id)arg1;
+- (_LSApplicationState *)appState;
 - (NSString *)vendorName;
 - (NSString *)teamID;
 - (NSString *)applicationType;
@@ -252,10 +253,10 @@ NSDictionary *constructGroupsContainersForEntitlements(NSDictionary *entitlement
 	return nil;
 }
 
-BOOL constructContainerizationForEntitlements(NSString* path, NSDictionary *entitlements, NSString** customContainerOut) {
+BOOL constructContainerizationForEntitlements(NSString* path, NSDictionary *entitlements) {
 
 	//hack way for "unsandbox but with a data container", so File Provider and Backup service can work for the jailbroken app
-	NSNumber *hackContainer = entitlements[@"uicache.app-data-container-required"];
+	NSNumber *hackContainer = entitlements[@"uicache.data-container-required"] ?: entitlements[@"uicache.app-data-container-required"];
 	if (hackContainer && [hackContainer isKindOfClass:[NSNumber class]]) {
 		if (hackContainer.boolValue) {
 			return YES;
@@ -267,8 +268,10 @@ BOOL constructContainerizationForEntitlements(NSString* path, NSDictionary *enti
 	if (containerRequired && [containerRequired isKindOfClass:[NSNumber class]]) {
 		return [(NSNumber*)containerRequired boolValue];
 	}else if (containerRequired && [containerRequired isKindOfClass:[NSString class]]) {
-		*customContainerOut = (NSString*)containerRequired;
-		return YES; //right?
+		/* this feature is only supported by the kernel sandbox.framework, lsd does not make any special treatment for this.
+			and no matter what type of bundle the executable belongs to, the process will always get an app-data-container(/var/mobile/Containers/Data/Application/) from sandbox.framework
+		*/
+		return YES;
 	}
 
 	//no-container: only valid true
@@ -283,12 +286,6 @@ BOOL constructContainerizationForEntitlements(NSString* path, NSDictionary *enti
 	NSNumber *noSandbox = entitlements[@"com.apple.private.security.no-sandbox"];
 	if (noSandbox && [noSandbox isKindOfClass:[NSNumber class]]) {
 		if (noSandbox.boolValue) {
-			// may conflict with patcher
-			// NSNumber*AppDataContainers = entitlements[@"com.apple.private.security.storage.AppDataContainers"];
-			// if (AppDataContainers && [AppDataContainers isKindOfClass:[NSNumber class]]) {
-			// 	if (AppDataContainers.boolValue) return YES; //hack way
-			// }
-			
 			return NO;
 		}
 	}
@@ -299,11 +296,11 @@ BOOL constructContainerizationForEntitlements(NSString* path, NSDictionary *enti
 	//
 	// }
 
-	// apps in containers/Bundle/ always containerized by default
-	if([path hasPrefix:@"/var/containers/Bundle/"] || [path hasPrefix:@"/private/var/containers/Bundle/"])
+	// executables in containers/Bundle/ are always containerized by default
+	if([path.stringByStandardizingPath hasPrefix:@"/var/containers/Bundle/"])
 		return YES;
 
-	return NO; //other paths such rootfs/preboot/var don't containerized by default
+	return NO; // executables in other paths such rootfs/preboot/var will not be containerized by default
 }
 
 NSString *constructTeamIdentifierForEntitlements(NSDictionary *entitlements) {
@@ -314,7 +311,6 @@ NSString *constructTeamIdentifierForEntitlements(NSDictionary *entitlements) {
 	return nil;
 }
 
-//sometimes launching the app may lose those environment variables
 NSDictionary *constructEnvironmentVariablesForContainerPath(NSString *containerPath, BOOL isContainerized) {
 	NSString *homeDir = isContainerized ? containerPath : jbroot(@"/var/mobile");
 	NSString *tmpDir = isContainerized ? [containerPath stringByAppendingPathComponent:@"tmp"] : jbroot(@"/var/tmp");
@@ -385,17 +381,13 @@ void registerPath(NSString *path, BOOL forceSystem)
 	dictToRegister[@"CodeInfoIdentifier"] = appBundleID;
 	dictToRegister[@"CompatibilityState"] = @0;
 
- 	NSString* appDataContainerID = nil;
-	BOOL appContainerized = constructContainerizationForEntitlements(path, entitlements, &appDataContainerID);
+	BOOL appContainerized = constructContainerizationForEntitlements(path, entitlements);
 	dictToRegister[@"IsContainerized"] = @(appContainerized);
 	if (appContainerized) {
 		MCMContainer *appContainer = [NSClassFromString(@"MCMAppDataContainer") containerWithIdentifier:appBundleID createIfNecessary:YES existed:nil error:nil];
 		NSString *containerPath = [appContainer url].path;
 
-		dictToRegister[@"Container"] = containerPath; /*
-		if app executable using another container in entitlements, 
-		lsd still create the app-bundle-id container for EnvironmentVariables but set Container-Path to  /var/mobile,  
-		when executable  actually runs, the kernel sandbox framework will ask the containerermanagerd to get the container defined in entitlements */
+		dictToRegister[@"Container"] = containerPath;
 		dictToRegister[@"EnvironmentVariables"] = constructEnvironmentVariablesForContainerPath(containerPath, YES);
 	} else {
 		dictToRegister[@"EnvironmentVariables"] = constructEnvironmentVariablesForContainerPath(nil, NO);
@@ -465,19 +457,15 @@ void registerPath(NSString *path, BOOL forceSystem)
 		pluginDict[@"CodeInfoIdentifier"] = pluginBundleID;
 		pluginDict[@"CompatibilityState"] = @0;
 
-		NSString* pluginDataContainerID = nil;
-		BOOL pluginContainerized = YES; //pkd required plugin to have sandbox data container; constructContainerizationForEntitlements(pluginPath, pluginEntitlements, &pluginDataContainerID);
-		pluginDict[@"IsContainerized"] = @(pluginContainerized);
-		if (pluginContainerized) {
-			/* don't use pluginDataContainerID : a plugin may use app's container, but lsd still create plugin-bundle-id container for it */
-			MCMContainer *pluginContainer = [NSClassFromString(@"MCMPluginKitPluginDataContainer") containerWithIdentifier:pluginBundleID createIfNecessary:YES existed:nil error:nil];
-			NSString *pluginContainerPath = [pluginContainer url].path;
+		/* pkd requires that App PlugIns be containerized */
+		BOOL pluginContainerized = YES;
 
-			pluginDict[@"Container"] = pluginContainerPath;
-			pluginDict[@"EnvironmentVariables"] = constructEnvironmentVariablesForContainerPath(pluginContainerPath, pluginContainerized);
-		} else {
-			pluginDict[@"EnvironmentVariables"] = constructEnvironmentVariablesForContainerPath(nil, pluginContainerized);
-		}
+		pluginDict[@"IsContainerized"] = @(pluginContainerized);
+		MCMContainer *pluginContainer = [NSClassFromString(@"MCMPluginKitPluginDataContainer") containerWithIdentifier:pluginBundleID createIfNecessary:YES existed:nil error:nil];
+		NSString *pluginContainerPath = [pluginContainer url].path;
+
+		pluginDict[@"Container"] = pluginContainerPath;
+		pluginDict[@"EnvironmentVariables"] = constructEnvironmentVariablesForContainerPath(pluginContainerPath, pluginContainerized);
 
 		pluginDict[@"Path"] = pluginPath;
 		pluginDict[@"PluginOwnerBundleID"] = appBundleID;
@@ -541,77 +529,6 @@ void unregisterApp(NSString* arg)
 	if (![workspace unregisterApplication:url]) {
 		fprintf(stderr, _("Error: Unable to unregister"));
 	}
-
-	return;
-
-	// char jbrootpath[PATH_MAX];
-	// assert(realpath(jbroot("/"), jbrootpath) != NULL);
-
-	// //if arg is a path, it should be a jbroot-based path and starts with /
-	// NSString* path = [NSString stringWithFormat:@"%s%@", jbrootpath, arg];
-
-	// bool usingPath = [arg containsString:@"/"];
-	// if(usingPath) {
-	// 	NSString* path = jbroot(arg);
-	// 	targetApp = [LSApplicationProxy applicationProxyForIdentifier:path];
-	// }
-
-	// LSApplicationProxy* targetApp = nil;
-	// LSApplicationWorkspace *workspace = [LSApplicationWorkspace defaultWorkspace];
-	// for (LSApplicationProxy *app in [workspace allApplications]) {
-	// 	//app.bundleURL is always *real-path*
-	// 	if( [app.bundleURL.path isEqualToString:path] || [app.bundleIdentifier isEqualToString:arg] )
-	// 	{
-	// 		targetApp = app;
-	// 		break;
-	// 	}
-	// }
-
-	// if(!targetApp) {
-	// 	fprintf(stderr, _("Error: Unable to find app %s\n"), arg.UTF8String);
-	// 	return;
-	// }
-
-	/* clean up the app's data containers, 
-	including group data containers and plug-in data containers, 
-	but don't use container-path directly, it may be /var/mobile */
-
-	// MCMContainer *appContainer = [NSClassFromString(@"MCMAppDataContainer") containerWithIdentifier:targetApp.bundleIdentifier createIfNecessary:NO existed:YES? error:nil];
-	// if(appContainer) {
-	// 	NSError *error;
-	// 	destroyContainerWithCompletion  //[NSFileManager.defaultManager removeItemAtPath:appContainer.url.path  error:nil];
-	// }
-
-	// // delete group container paths
-	// [[targetApp groupContainerURLs] enumerateKeysAndObjectsUsingBlock:^(NSString* groupId, NSURL* groupURL, BOOL* stop)
-	// {
-	// 	// If another app still has this group, don't delete it
-	// 	NSArray<LSApplicationProxy*>* appsWithGroup = applicationsWithGroupId(groupId);
-	// 	if(appsWithGroup.count > 1)
-	// 	{
-	// 		NSLog(@"[uninstallApp] not deleting %@, appsWithGroup.count:%lu", groupURL, appsWithGroup.count);
-	// 		return;
-	// 	}
-
-	// 	NSLog(@"[uninstallApp] deleting %@", groupURL);
-	// 	[[NSFileManager defaultManager] removeItemAtURL:groupURL error:nil];
-	// }];
-
-	// // delete app plugin paths
-	// for(LSPlugInKitProxy* pluginProxy in targetApp.plugInKitPlugins)
-	// {
-	// 	NSURL* pluginURL = pluginProxy.dataContainerURL;
-	// 	if(pluginURL)?????container????
-	// 	{
-	// 		NSLog(@"[uninstallApp] deleting %@", pluginURL);
-	// 		destroyContainerWithCompletion  //[[NSFileManager defaultManager] removeItemAtURL:pluginURL error:nil];
-	// 	}
-	// }
-
-	// //there is a bug in unregisterApplication:, if path does exists but its realpath changed, it fault.
-	// if (![workspace unregisterApplication:targetApp.bundleURL]) {
-	// 	fprintf(stderr, _("Error: Unable to unregister %s : %s\n"), targetApp.bundleIdentifier.UTF8String, targetApp.bundleURL.path.UTF8String);
-	// }
 }
 
 void listBundleID(void) {
@@ -621,30 +538,8 @@ void listBundleID(void) {
 	}
 }
 
-void printfNSObject(id obj)
-{
-	unsigned int outCount=0;
-    objc_property_t *properties =class_copyPropertyList([obj class], &outCount);
-    for (int i = 0; i<outCount; i++)
-    {
-        objc_property_t property = properties[i];
-        const char* char_f =property_getName(property);
-        NSString *propertyName = [NSString stringWithUTF8String:char_f];
-		@try{
-        id propertyValue = [obj valueForKey:(NSString *)propertyName];
-		printf("%s:\t%s\n", propertyName.UTF8String, [propertyValue debugDescription].UTF8String);
-		}
-        @catch (NSException *exception)
-        {
-			printf("***unaccessible %s\n", propertyName.UTF8String);
-		}
-    }
-    free(properties);
-}
-
 void infoForBundleID(NSString *bundleID) {
 	LSApplicationProxy *app = [LSApplicationProxy applicationProxyForIdentifier:bundleID];
-	// printfNSObject(app.correspondingApplicationRecord);
 
 	if ([[app appState] isValid]) {
 		printf(_("Name: %s\n"), [[app localizedNameForContext:nil] UTF8String]);
@@ -657,6 +552,7 @@ void infoForBundleID(NSString *bundleID) {
 		printf(_("Team ID: %s\n"), [[app teamID] UTF8String]);
 		printf(_("Type: %s\n"), [[app applicationType] UTF8String]);
 		printf(_("Removable: %s\n"), [app isDeletable] ? _("true") : _("false"));
+		printf(_("Containerized: %s\n"), [app isContainerized] ? _("true") : _("false"));
 
 		for(NSString* name in [app environmentVariables])
 			printf(_("EnvironmentVariables: %s = %s\n"), [name UTF8String], [[[app environmentVariables] objectForKey:name] UTF8String]);
